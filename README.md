@@ -5,12 +5,12 @@ ValidationJS is a validation in Javascript what i made for my projects, inspired
 
 ## Installation
 
-Clone the repository on __public__.
+Clone the repository on the __public__.
 ```
 git clone https://github.com/JuanCruzAGB/ValidationJS.git
 ```
 
-And import the sripts at the end of the body
+And import the scripts at the end of the body.
 ```
 <script src="ValidationJS/Validation.js"></script>
 <script src="ValidationJS/Rules.js"></script>
