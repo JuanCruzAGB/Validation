@@ -1,5 +1,5 @@
-<h1 align="center">ValidationJS</h1>
-<h2 align="center">by Archimak</h2>
+<h1 style="border::none" align="center">ValidationJS</h1>
+<h2 style="margin-top:none" align="center">by Archimak</h2>
 
 ValidationJS is a validation in JavaScript what i made for my projects, inspired by the [validation from laravel](https://laravel.com/docs/6.x/validation)
 
