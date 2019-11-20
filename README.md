@@ -1,7 +1,7 @@
 # ValidationJS
-> by Archimak
+> by Archimak ([JuanCruzAGB](https://github.com/JuanCruzAGB))
 
-ValidationJS is a validation in JavaScript what i made for my projects, inspired by the [validation from laravel](https://laravel.com/docs/6.x/validation)
+ValidationJS is a validation in Javascript what i made for my projects, inspired by the [validation from laravel](https://laravel.com/docs/6.x/validation).
 
 ## Installation
 
