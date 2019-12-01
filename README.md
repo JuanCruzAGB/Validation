@@ -10,14 +10,19 @@ Clone the repository on the __public__.
 git clone https://github.com/JuanCruzAGB/ValidationJS.git
 ```
 
-And import the scripts at the end of the body.
+Import the css in the head HTML element.
 ```
-<script src="ValidationJS/Validation.js"></script>
-<script src="ValidationJS/Rules.js"></script>
-<script src="ValidationJS/Messages.js"></script>
-<script src="ValidationJS/Requirements.js"></script>
-<script src="ValidationJS/Validator.js"></script>
-<script src="ValidationJS/Invalidator.js"></script>
+<link href="css/ValidationJS.css" rel="stylesheet">
+```
+
+And the scripts at the end of the body.
+```
+<script src="js/ValidationJS/Validation.js"></script>
+<script src="js/ValidationJS/Rules.js"></script>
+<script src="js/ValidationJS/Messages.js"></script>
+<script src="js/ValidationJS/Requirements.js"></script>
+<script src="js/ValidationJS/Validator.js"></script>
+<script src="js/ValidationJS/Invalidator.js"></script>
 ```
 
 ## What it contains

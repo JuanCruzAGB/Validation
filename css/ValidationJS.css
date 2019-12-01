@@ -1,0 +1,12 @@
+.invalid-tooltip{
+    --primary-color: rgba(217,83,79,0.9);
+    position: initial;
+    display: none;
+    background: var(--primary-color);
+    margin: 0;
+}
+
+.invalid-tooltip.showed{
+    position: initial;
+    display: block;
+}
