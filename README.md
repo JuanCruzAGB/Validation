@@ -12,17 +12,17 @@ git clone https://github.com/JuanCruzAGB/ValidationJS.git
 
 Import the css in the head HTML element.
 ```
-<link href="css/ValidationJS.css" rel="stylesheet">
+<link href="ValidationJS/css/styles.css" rel="stylesheet">
 ```
 
 And the scripts at the end of the body.
 ```
-<script src="js/ValidationJS/Validation.js"></script>
-<script src="js/ValidationJS/Rules.js"></script>
-<script src="js/ValidationJS/Messages.js"></script>
-<script src="js/ValidationJS/Requirements.js"></script>
-<script src="js/ValidationJS/Validator.js"></script>
-<script src="js/ValidationJS/Invalidator.js"></script>
+<script src="ValidationJS/js/Validation.js"></script>
+<script src="ValidationJS/js/Rules.js"></script>
+<script src="ValidationJS/js/Messages.js"></script>
+<script src="ValidationJS/js/Requirements.js"></script>
+<script src="ValidationJS/js/Validator.js"></script>
+<script src="ValidationJS/js/Invalidator.js"></script>
 ```
 
 ## What it contains
