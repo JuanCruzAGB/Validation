@@ -54,12 +54,19 @@ let Messages = {
      * @param {string} param - The param.
      */
     getOne(messages, rule, param){
-        if(Requirements[rule].replacement){
+        if(Requirements[rule].replacement !== undefined){
             for(let position = 0; position < Requirements[rule].replacement.length; position++){
                 return messages[rule].replace(Requirements[rule].replacement[position], param);
             };
         }else{
-            return messages[rule];
+            for(let requirement in messages){
+                console.log(requirement);
+                console.log(rule);
+                console.log('---');
+                if(requirement == rule){
+                    return messages[requirement];
+                }
+            }
         }
     },
 };
