@@ -116,8 +116,9 @@ let Validation = {
      * @return {html}
      */
     getTooltip(number, name){
-        if(document.querySelector('.form-validation-' + number + ' [name=' + name + '] ~ .invalid-tooltip')){
-            return document.querySelector('.form-validation-' + number + ' [name=' + name + '] ~ .invalid-tooltip');
+        console.log('.form-validation-' + number + ' .' + name + '.invalid-tooltip');
+        if(document.querySelector('.form-validation-' + number + ' .' + name + '.invalid-tooltip')){
+            return document.querySelector('.form-validation-' + number + ' .' + name + '.invalid-tooltip');
         }else{
             console.log('The input called: ' + name + " doesn't have an invalid-tooltip as brother");
             return false;

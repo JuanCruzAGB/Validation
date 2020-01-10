@@ -60,9 +60,6 @@ let Messages = {
             };
         }else{
             for(let requirement in messages){
-                console.log(requirement);
-                console.log(rule);
-                console.log('---');
                 if(requirement == rule){
                     return messages[requirement];
                 }
