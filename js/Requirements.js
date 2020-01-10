@@ -205,13 +205,14 @@ let Requirements = {
     },
     captcha: {
         validate(input){
-            // if(grecaptcha.getResponse()){
+            console.log(input.value)
+            if(grecaptcha.getResponse()){
                 aux.valid = true;
                 return aux;
-            // }else{
-            //     aux.valid = false;
-            //     return aux;
-            // }
+            }else{
+                aux.valid = false;
+                return aux;
+            }
         },
     },
     // exists: {
