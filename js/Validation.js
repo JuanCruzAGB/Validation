@@ -92,6 +92,7 @@ let Validation = {
      */
     callRequirement(aux, requirement, number, name){
         if(aux.valid && aux.required){
+            console.log(requirement);
             aux = Requirements[requirement].validate(this.getInput(number, name), aux, this.forms[number].rules[name][requirement]);
             if(aux.valid){
                 Validator.set(this.getInput(number, name), this.getTooltip(number, name));
