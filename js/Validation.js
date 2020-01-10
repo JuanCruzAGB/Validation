@@ -116,6 +116,7 @@ let Validation = {
      * @return {html}
      */
     getTooltip(number, name){
+        console.log('.form-validation-' + number + ' .' + name + '.invalid-tooltip');
         if(document.querySelector('.form-validation-' + number + ' .' + name + '.invalid-tooltip')){
             return document.querySelector('.form-validation-' + number + ' .' + name + '.invalid-tooltip');
         }else{
