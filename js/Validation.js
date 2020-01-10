@@ -79,6 +79,7 @@ let Validation = {
             }
         }
         if(valid && input === null){
+            console.log('enviado');
             this.forms[number].element.submit();
         } 
     },
