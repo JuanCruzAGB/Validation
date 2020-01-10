@@ -203,23 +203,34 @@ let Requirements = {
             ":mimetypes",
         ],
     },
-    exists: {
-        /**
-         * Valid an input.
-         * @param {html} input - The input.
-         * @param {object} aux - An auxiliar.
-         * @param {number} length - The length.
-         * @return {object}
-         */
-        validate(input, aux, params){
-            console.log(params);
+    captcha: {
+        validate(input, aux){
+            if(grecaptcha.getResponse()){
+                aux.valid = true;
+                return aux;
+            }else{
+                aux.valid = false;
+                return aux;
+            }
         },
-        /** @var {object} - The Requirement exists replacement text */
-        replacement: [
-            ":table",
-            ":column",
-        ],
     },
+    // exists: {
+    //     /**
+    //      * Valid an input.
+    //      * @param {html} input - The input.
+    //      * @param {object} aux - An auxiliar.
+    //      * @param {number} length - The length.
+    //      * @return {object}
+    //      */
+    //     validate(input, aux, params){
+    //         console.log(params);
+    //     },
+    //     /** @var {object} - The Requirement exists replacement text */
+    //     replacement: [
+    //         ":table",
+    //         ":column",
+    //     ],
+    // },
     // unique: {
     //     /**
     //      * Valid an input.
