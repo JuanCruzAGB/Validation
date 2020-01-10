@@ -204,14 +204,14 @@ let Requirements = {
         ],
     },
     captcha: {
-        validate(input, aux){
-            if(grecaptcha.getResponse()){
+        validate(input){
+            // if(grecaptcha.getResponse()){
                 aux.valid = true;
                 return aux;
-            }else{
-                aux.valid = false;
-                return aux;
-            }
+            // }else{
+            //     aux.valid = false;
+            //     return aux;
+            // }
         },
     },
     // exists: {
