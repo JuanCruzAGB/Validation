@@ -1,14 +1,15 @@
 let Invalidator = {
     /**
      * Make an input invalid.
-     * @param {html} input - The input.
-     * @param {html} tooltip - The tooltip.
+     * @param {Input[]} inputs - The Inputs.
      * @param {string} message - The error message.
      */
-    set(input, tooltip, message){
-        input.classList.add('invalid');
-        tooltip.innerHTML = message;
-        tooltip.classList.add('showed');
-        input.classList.remove('valid');
+    set(inputs, message){
+        for(let input of inputs){
+            input.HTML.classList.remove('valid');
+            input.HTML.classList.add('invalid');
+            input.tooltip.innerHTML = message;
+            input.tooltip.classList.add('showed');
+        }
     },
 };

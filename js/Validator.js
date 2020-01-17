@@ -1,13 +1,13 @@
 let Validator = {
     /**
      * Make an input valid.
-     * @param {html} input - The input.
-     * @param {html} tooltip - The tooltip.
-     * @param {string} message - The error message.
+     * @param {Input[]} inputs - The Inputs.
      */
-    set(input, tooltip){
-        input.classList.add('valid');
-        input.classList.remove('invalid');
-        tooltip.classList.remove('showed');
+    set(inputs){
+        for(let input of inputs){
+            input.HTML.classList.remove('invalid');
+            input.tooltip.classList.remove('showed');
+            input.HTML.classList.add('valid');
+        }
     },
 };
