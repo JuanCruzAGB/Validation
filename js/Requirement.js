@@ -27,9 +27,9 @@ class Requirement{
         for(let input of aux.inputs){
             if(input.HTML.value){
                 valid = true;
-            }else if(!valid){
+            }else{
                 valid = false;
-                aux = this.getError('required', aux);
+                aux = this.getError('required', aux, input);
             }
         }
         aux.required = true;
@@ -64,7 +64,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('numeric', aux);
+                aux = this.getError('numeric', aux, input);
             }
         }
         aux.valid = valid;
@@ -82,7 +82,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('string', aux);
+                aux = this.getError('string', aux, input);
             }
         }
         aux.valid = valid;
@@ -101,7 +101,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('email', aux);
+                aux = this.getError('email', aux, input);
             }
         }
         aux.valid = valid;
@@ -119,7 +119,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('date', aux);
+                aux = this.getError('date', aux, input);
             }
         }
         aux.valid = valid;
@@ -137,7 +137,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('array', aux);
+                aux = this.getError('array', aux, input);
             }
         }
         aux.valid = valid;
@@ -157,7 +157,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('url', aux);
+                aux = this.getError('url', aux, input);
             }
         }
         aux.valid = valid;
@@ -175,7 +175,7 @@ class Requirement{
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('min', aux);
+                aux = this.getError('min', aux, input);
             }
         }
         aux.valid = valid;
@@ -189,11 +189,12 @@ class Requirement{
     static max(aux, params){
         let valid = true;
         for(let input of aux.inputs){
+            // console.log(input.HTML.value.length);
             if(input.HTML.value.length <= parseInt(params)){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('max', aux);
+                aux = this.getError('max', aux, input);
             }
         }
         aux.valid = valid;
@@ -220,11 +221,11 @@ class Requirement{
                     valid = true;
                 }else{
                     valid = false;
-                    aux = this.getError('mimetypes', aux);
+                    aux = this.getError('mimetypes', aux, input);
                 }
             }else{
                 valid = false;
-                aux = this.getError('mimetypes', aux);
+                aux = this.getError('mimetypes', aux, input);
             }
         }
         aux.valid = valid;
@@ -240,19 +241,30 @@ class Requirement{
      * Make an error property in the auxiliary array.
      * @param {string} name - The Requirement name.
      * @param {object} aux - An auxiliar object.
+     * @param {Input} input - The invalid Input.
      * @return {object}
      */
-    static getError(name, aux){
+    static getError(name, aux, input){
         let req;
         for(let requirement of aux.requirements){
             if(requirement.name == name){
                 req = requirement;
             }
         }
-        aux.error = {
-            target: aux.inputs[0].name,
-            requirement: req,
-        };
+        if(aux.errors){
+            aux.errors.push({
+                target: aux.inputs[0].name,
+                requirement: req,
+                input: input,
+            });
+        }else{
+            aux.errors = [];
+            aux.errors.push({
+                target: aux.inputs[0].name,
+                requirement: req,
+                input: input,
+            });
+        }
         return aux;
     }
 };

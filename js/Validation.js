@@ -59,9 +59,10 @@ let Validation = {
                     Validator.set(aux.inputs);
                 }else{
                     for(let message of aux.form.messages){
-                        console.log(message);
-                        if(message.target == aux.error.target){
-                            Invalidator.set(aux.inputs, message.getOne(aux.error.requirement));
+                        for(let error of aux.errors){
+                            if(message.target == error.target){
+                                Invalidator.set(error, message.getOne(error));
+                            }
                         }
                     }
                 }

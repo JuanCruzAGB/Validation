@@ -11,14 +11,14 @@ class Message{
     }
     /**
      * Get one message.
-     * @param {string} requirement - The Requirement name.
+     * @param {object} error - The error.
      */
-    getOne(requirement){
+    getOne(error){
         for(let text in this.texts){
-            if(text == requirement.name){
+            if(text == error.requirement.name){
                 if(this.texts[text].search(/\:/) > 0){
-                    let re =  new RegExp(":" + requirement.name);
-                    return this.texts[text].replace(re, requirement.params);
+                    let re =  new RegExp(":" + error.requirement.name);
+                    return this.texts[text].replace(re, error.requirement.params);
                 }else{
                     return this.texts[text];
                 }

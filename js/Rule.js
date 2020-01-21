@@ -57,7 +57,15 @@ class Rule{
     static attach(aux){
         if(aux.array){
             for(let requirement of aux.array){
-                aux.requirements.push(requirement);
+                let found = false;
+                for(let req of aux.requirements){
+                    if(req == requirement){
+                        found = true;
+                    }
+                }
+                if(!found){
+                    aux.requirements.push(requirement);
+                }
             }
         }
         return aux.requirements;
