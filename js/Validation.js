@@ -44,7 +44,7 @@ let Validation = {
         if(valid && input === null){
             // console.log('enviado');
             form.HTML.submit();
-        } 
+        }
     },
     /**
      * Execute the Requirement and valide, or not, the input.

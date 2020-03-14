@@ -8,7 +8,7 @@ class Input{
     constructor(name, className, inputs){
         this.parentClassName = className;
         this.setData(name, inputs);
-        this.setTooltip();
+        this.setSupport();
         this.addEvent();
     }
     /**
@@ -37,17 +37,10 @@ class Input{
             this.HTML = document.querySelector(this.parentClassName + " [name='" + this.name + "']");
         }
     }
-    /** Set a tooltip. */
-    setTooltip(){
+    /** Set the Support HTML. */
+    setSupport(){
         if(document.querySelector(this.parentClassName + " ." + this.name)){
-            let tooltips = document.querySelectorAll(this.parentClassName + " ." + this.name + ' .invalid-tooltip');
-            for(let i = 0; i < tooltips.length; i++){
-                if(this.array && i + 1 == this.array){
-                    this.tooltip = tooltips[i];
-                }else if(!this.array){
-                    this.tooltip = tooltips[0];
-                }
-            }
+            this.support = new Support(this.parentClassName + " ." + this.name, this);
         }
     }
     /** Add an event to the Input HTML. */

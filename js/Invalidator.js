@@ -7,7 +7,6 @@ let Invalidator = {
     set(error, message){
         error.input.HTML.classList.remove('valid');
         error.input.HTML.classList.add('invalid');
-        error.input.tooltip.innerHTML = message;
-        error.input.tooltip.classList.add('showed');
+        error.input.support.addError(message);
     },
 };
