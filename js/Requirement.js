@@ -1,3 +1,7 @@
+/**
+ * Manage the Requirements from the validation.
+ * @class Requirement
+ */
 class Requirement{
     /**
      * Requirement constructor.

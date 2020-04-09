@@ -1,3 +1,7 @@
+/**
+ * Manage the Messages from the validation.
+ * @class Message
+ */
 class Message{
     /**
      * Message constructor.

@@ -1,3 +1,7 @@
+/**
+ * Manage the Support elements where the Messages will be shown.
+ * @class Support
+ */
 class Support{
     /**
      * Creates an instance of Support.

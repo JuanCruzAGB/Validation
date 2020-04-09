@@ -1,3 +1,7 @@
+/**
+ * Manage all the <form> created.
+ * @class Form
+ */
 class Form{
     /**
      * Form constructor.

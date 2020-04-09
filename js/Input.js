@@ -1,3 +1,7 @@
+/**
+ * Manage all the <input> created.
+ * @class Input
+ */
 class Input{
     /**
      * Input constructor.

@@ -1,3 +1,7 @@
+/**
+ * Manage the Rules from the validation.
+ * @class Rule
+ */
 class Rule{
     /**
      * Rule constructor.
