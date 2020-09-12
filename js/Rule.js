@@ -1,58 +1,120 @@
+import { Requirement } from "./Requirement.js";
+
 /**
- * Manage the Rules from the validation.
+ * * Controls the Form Rules.
+ * @export
  * @class Rule
  */
-class Rule{
+export class Rule{
     /**
-     * Rule constructor.
-     * @param {string} target - The target of the Rule.
-     * @param {string} requirements - The Requirements of the Rule.
+     * * Creates an instance of Rule.
+     * @param {object} properties - Rule properties.
+     * @param {string} requirements - Rule Requirements.
+     * @memberof Rule
      */
-    constructor(target, requirements){
-        this.target = target;
-        this.parse(requirements);
+    constructor(properties = {
+        target: undefined
+    }, requirements = undefined){
+        this.setProperties(properties);
+        this.setRequirements(requirements);
     }
+
     /**
-     * Parse and split the requirements.
-     * @param {array} requirements - The Requirements of the Rule.
-     * @return {array}
+     * * Set the Rule properties.
+     * @param {object} properties - Rule properties.
+     * @memberof Rule
      */
-    parse(requirements){
+    setProperties(properties = {
+        target: undefined
+    }){
+        this.properties = {};
+        this.setTarget(properties);
+    }
+
+    /**
+     * * Set the Rule target.
+     * @param {object} properties - Rule properties.
+     * @memberof Rule
+     */
+    setTarget(properties = {
+        target: undefined
+    }){
+        this.properties.target = properties.target;
+    }
+
+    /**
+     * * Set the Rule Requirements.
+     * @param {string} requirements - Rule Requirements.
+     * @memberof Rule
+     */
+    setRequirements(requirements = undefined){
         requirements = requirements.split("|");
         this.requirements = [];
-        for(let i = 0; i < requirements.length; i++){
-            this.requirements.push(new Requirement(requirements[i]));
+        for (const requirement of requirements) {
+            this.requirements.push(new Requirement({name: requirement}));
         }
     }
+
     /**
-     * Find all the Rules in the Form.
-     * @param {string} className - The Form class name.
-     * @return {array}
+     * * Get the Requirements from an Input.
+     * @param {Input} input - Input.
+     * @returns
+     * @memberof Rule
      */
-    static getAll(className){
-        let validation = JSON.parse(document.querySelector(className).dataset.validation);
-        return validation.rules;
+    getRequirementsFromInput(input = undefined){
+        let requirements = [];
+        for (const requirement of this.requirements) {
+            if(this.properties.target == input.properties.name){
+                requirements.push(requirement);
+            }
+        }
+        return requirements;
     }
+
+    /**
+     * * Parse all the Rules.
+     * @static
+     * @param {object} rules - Rules.
+     * @returns
+     * @memberof Rule
+     */
+    static getAll(rulesToFor = []){
+        let rules = []
+        for (const target in rulesToFor) {
+            if (rulesToFor.hasOwnProperty(target)) {
+                const requirements = rulesToFor[target];
+                // let regexp = new RegExp('.');
+                // if(regexp.exec(target)){
+                //     Rule.addArrayMode(this.rules, target, rules[target]);
+                // }else{
+                    rules.push(new this({target: target}, requirements));
+                // }
+            }
+        }
+        return rules;
+    }
+
     /**
      * Add an array to a Rule.
      * @param {Rule[]} messages - The Rules created.
      * @param {string} target - The Rule target.
      * @param {string} requirements - The Rule requirements.
      */
-    static addArrayMode(rules, target, requirements){
-        target = target.split(".");
-        for(let i = 0; i < rules.length; i++){
-            if(rules[i].target == target[0]){
-                requirements = requirements.split("|");
-                if(!rules[i].array){
-                    rules[i].array = [];
-                }
-                for(let j = 0; j < requirements.length; j++){
-                    rules[i].array.push(new Requirement(requirements[j]));
-                }
-            }
-        }
-    }
+    // static addArrayMode(rules, target, requirements){
+    //     target = target.split(".");
+    //     for(let i = 0; i < rules.length; i++){
+    //         if(rules[i].target == target[0]){
+    //             requirements = requirements.split("|");
+    //             if(!rules[i].array){
+    //                 rules[i].array = [];
+    //             }
+    //             for(let j = 0; j < requirements.length; j++){
+    //                 rules[i].array.push(new Requirement(requirements[j]));
+    //             }
+    //         }
+    //     }
+    // }
+
     /** 
      * Attack the auxiliar Requirements array into the reguler Requirements array.
      * @param {object} - An auxiliar array.

@@ -1,76 +1,78 @@
 /**
- * Manage the Support elements where the Messages will be shown.
+ * * Support controls the support tooltip.
+ * @export
  * @class Support
  */
-class Support{
+export class Support{
     /**
      * Creates an instance of Support.
      * @param {string} selector
      * @param {Input} input
      * @memberof Support
      */
-    constructor(selector, input){
-        this.selector = selector;
-        this.findSupport(input);
-    }
     /**
-     * Find the correct support HTML.
-     * @param {Input} input
+     * * Creates an instance of Support.
+     * @param {HTMLElemet} html - Support HTML Element.
      * @memberof Support
      */
-    findSupport(input){
-        if(document.querySelectorAll(this.selector  + ' .support-box').length){
-            this.findBox(input);
-            this.type = 'box';
+    constructor(html = undefined){
+        this.setHTML(html);
+        this.setProperties();
+    }
+
+    /**
+     * * Set the Support properties.
+     * @memberof Support
+     */
+    setProperties(){
+        this.properties = {};
+        this.setType();
+    }
+
+    /**
+     * * Set the Input type.
+     * @memberof Input
+     */
+    setType(){
+        if(this.html.classList.contains('support-box')){
+            this.properties.type = 'box';
         }else{
-            document.querySelector(this.selector).classList.add('support-tooltip');
             this.type = 'tooltip';
         }
     }
+
     /**
-     * Find the support box HTML.
-     * @param {Input} input
+     * * Set the Support HTML Element.
+     * @param {HTMLElement} html - Support HTML Element.
      * @memberof Support
      */
-    findBox(input){
-        let boxes = document.querySelectorAll(this.selector + ' .support-box');
-        for(let i = 0; i < boxes.length; i++){
-            if(input.array && i + 1 == input.array){
-                this.box = boxes[i];
-            }else if(!input.array){
-                this.box = boxes[0];
-            }
-        }
+    setHTML(html = undefined){
+        this.html = html;
     }
+    
     /**
-     * Add the message error.
-     * @param {string} message
+     * * Add the message to the Support.
+     * @param {string} message - Message to add.
      * @memberof Support
      */
-    addError(message){
-        switch(this.type){
+    addError(message = ''){
+        switch(this.properties.type){
             case 'box':
-                    this.box.innerHTML = message;
-                    this.box.classList.add('showed');
-                break;
-            case 'tooltip':
-                document.querySelector(this.selector).setAttribute('data-tooltip', message);
-                document.querySelector(this.selector).classList.add('showed');
+                this.html.innerHTML = message;
+                this.html.classList.remove('hidden');
                 break;
         }
     }
+
     /**
-     * Remove the message error.
+     * * Remove the Support error.
      * @memberof Support
      */
     removeError(){
-        switch(this.type){
+        switch(this.properties.type){
             case 'box':
-                    this.box.classList.remove('showed');
-                break;
-            case 'tooltip':
-                    document.querySelector(this.selector).removeAttribute('data-tooltip');
-                    document.querySelector(this.selector).classList.remove('showed');
+                this.html.innerHTML = '';
+                this.html.classList.add('hidden');
                 break;
         }
     }

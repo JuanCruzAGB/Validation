@@ -1,89 +1,178 @@
+import { Support } from "./Support.js";
+import { Validation } from "./Validation.js";
+
 /**
- * Manage all the <input> created.
+ * * Input controls the <input> created.
+ * @export
  * @class Input
  */
-class Input{
+export class Input{
     /**
-     * Input constructor.
-     * @param {string} name - The input name.
-     * @param {string} className - The form parent class name.
-     * @param {Input[]} inputs - All the Inputs created.
+     * * Creates an instance of Input.
+     * @param {object} properties - Input properties.
+     * @param {HTMLElement} html - Input HTML Element.
+     * @param {Form} Form - Input Form.
+     * @memberof Input
      */
-    constructor(name, className, inputs){
-        this.parentClassName = className;
-        this.setData(name, inputs);
+    constructor(properties = {
+        id: 'validation-1',
+    }, html = undefined, Form = undefined){
+        this.setHTML(html);
+        this.setProperties(properties);
         this.setSupport();
-        this.addEvent();
+        this.setEvent(Form);
     }
+
     /**
-     * Set the basic data.
-     * @param {string} name - The input name.
-     * @param {Input[]} inputs All the Inputs created.
+     * * Set the Input properties.
+     * @param {object} properties - Input properties.
+     * @memberof Input
      */
-    setData(name, inputs){
-        if(name.search(/\[/) > 0){
-            this.name = name.split('[')[0];
-            let i = 1;
-            for(let input of inputs){
-                if(input.name == this.name){
-                    i++;
-                }
-            }
-            this.array = i;
-            let HTMLElements = document.querySelectorAll(this.parentClassName + " [name='" + name + "']");
-            for(let i = 1; i <= HTMLElements.length; i++){
-                if(this.array == i){
-                    this.HTML = HTMLElements[i - 1];
-                }
-            }
-        }else{
-            this.name = name;
-            this.HTML = document.querySelector(this.parentClassName + " [name='" + this.name + "']");
+    setProperties(properties = {
+        id: 'validation-1',
+    }){
+        this.properties = {};
+        this.setId(properties);
+        this.setType();
+        this.setName();
+    }
+
+    /**
+     * * Set the Input ID.
+     * @param {object} properties - Input properties.
+     * @memberof Input
+     */
+    setId(properties = {
+        id: 'validation-1'
+    }){
+        this.properties.id = properties.id;
+    }
+
+    /**
+     * * Set the Input type.
+     * @memberof Input
+     */
+    setType(){
+        switch(this.htmls[0].nodeName){
+            case 'INPUT':
+                this.properties.type = this.htmls[0].type;
+                break;
+            case 'TEXTAREA':
+                this.properties.type = 'text';
+                break;
+            case 'SELECT':
+                this.properties.type = null;
+                break;
         }
     }
-    /** Set the Support HTML. */
+
+    /**
+     * * Set the Input name.
+     * @memberof Input
+     */
+    setName(){
+        this.properties.name = this.htmls[0].name;
+    }
+
+    /**
+     * * Set the Input HTML Element.
+     * @param {HTMLElement} html - Input HTML Element.
+     * @memberof Input
+     */
+    setHTML(html = undefined){
+        this.htmls = [];
+        this.htmls.push(html);
+    }
+
+    /**
+     * * Set the Input Support.
+     * @memberof Input
+     */
     setSupport(){
-        if(document.querySelector(this.parentClassName + " ." + this.name)){
-            this.support = new Support(this.parentClassName + " ." + this.name, this);
+        let html;
+        if(html = document.querySelector(`#${this.properties.id} [name=${this.properties.name}] + .support`)){
+            this.support = new Support(html);
         }
     }
-    /** Add an event to the Input HTML. */
-    addEvent(){
-        let aux = this;
-        if(this.HTML.type == 'text' ||
-        this.HTML.type == 'email' ||
-        this.HTML.type == 'numeric' ||
-        this.HTML.type == 'password' ||
-        !this.HTML.hasAttribute('type')){
-            this.findCKEditor();
-            this.HTML.addEventListener('keyup', function(e){
-                e.preventDefault();
-                Validation.validate(aux.parentClassName, aux);
-            });
-        }else{
-            this.HTML.addEventListener('change', function(e){
-                e.preventDefault();
-                Validation.validate(aux.parentClassName, aux);
-            });
-        }
-    }
-    /** Find if there is a CKEditor on the Input. */
-    findCKEditor(){
-        let aux = this;
-        if(this.HTML.classList.contains('ckeditor')){
-            CKEDITOR.instances[this.HTML.name].on('change', function(){
-                CKEDITOR.instances[aux.HTML.name].updateElement();
-                Validation.validate(aux.parentClassName, aux);
-            });
-        }
-    }
+
     /**
-     * Find all the Inputs in the Form.
-     * @param {string} className - The Form class name.
+     * * Set the Input event.
+     * @memberof Input
      */
-    static getHTMLElements(className){
-        return document.querySelectorAll(className + ' input,' + className + ' textarea');
+    setEvent(Form = undefined){
+        let instance = this;
+        switch (this.properties.type) {
+            case 'checkbox':
+                console.log(this);
+                break;
+            case null:
+                this.htmls[0].addEventListener('change', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                break;
+            default:
+                if(this.htmls[0].nodeName == 'TEXTAREA'){
+                    if(this.checkCKEditor()){
+                        CKEDITOR.instances[this.html.name].on('change', function(){
+                            CKEDITOR.instances[instance.html.name].updateElement();
+                            Validation.validate(Form, instance);
+                        });
+                    }else{
+                        this.htmls[0].addEventListener('keyup', function(e){
+                            e.preventDefault();
+                            Validation.validate(Form, instance);
+                        });
+                    }
+                }else{
+                    this.htmls[0].addEventListener('keyup', function(e){
+                        e.preventDefault();
+                        Validation.validate(Form, instance);
+                    });
+                }
+                break;
+        }
     }
+
+    /**
+     * * Check if the Input has a CKEditor.
+     * @returns
+     * @memberof Input
+     */
+    checkCKEditor(){
+        if(this.htmls[0].classList.contains('ckeditor')){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    addInput(newInput){
+        this.htmls.push(newInput);
+    }
+    
+    /**
+     * * Get all the Form <input> HTML Element.
+     * @static
+     * @param {Form} Form - Form.
+     * @returns
+     * @memberof Input
+     */
+    static getHTMLElements(Form = undefined){
+        let auxHtml = document.querySelectorAll(`#${Form.properties.id} input.form-input, #${Form.properties.id} textarea.form-input`),
+            htmls = [],
+            names = [];
+        for (const html of auxHtml) {
+            if(names.indexOf(html.name) == -1){
+                htmls.push(new this({id: Form.properties.id}, html, Form));
+                names.push(html.name);
+            }else{
+                htmls[names.indexOf(html.name)].addInput(html);
+            }
+        }
+        return htmls;
+    }
+
     /**
      * Find if the Input exist in an auxiliar array.
      * @param {HTMLElement[]} inputs - The auxiliar array.

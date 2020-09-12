@@ -1,79 +1,129 @@
+import { Input } from "./Input.js";
+import { Message } from "./Message.js";
+import { Rule } from "./Rule.js";
+import { Validation } from "./Validation.js";
+
 /**
- * Manage all the <form> created.
+ * * Form manage the <form> created.
+ * @export
  * @class Form
  */
-class Form{
+export class Form{
     /**
-     * Form constructor.
-     * @param {HTMLElement} form - The form tag.
+     * * Creates an instance of Form.
+     * @param {object} properties - Form properties.
      * @param {string} number - The form number.
+     * @memberof Form
      */
-    constructor(form, number){
-        this.HTML = form;
-        this.HTML.classList.add('form-validation-' + number);
-        this.className = '.form-validation-' + number;
-        this.setSubmit();
+    constructor(properties = {
+        id: 'validation-1'
+    }){
+        this.setProperties(properties);
+        this.setHTML();
+        this.setSubmitButton();
         this.setInputs();
         this.setRules();
         this.setMessages();
     }
-    /** Set the submit buttons. */
-    setSubmit(){
-        let aux = this;
-        this.submit = document.querySelector(this.className + ' .form-submit');
-        this.submit.addEventListener('click', function(e){
+
+    /**
+     * * Set the Form properties.
+     * @param {object} properties - Form properties.
+     * @memberof Form
+     */
+    setProperties(properties = {
+        id: 'validation-1'
+    }){
+        this.properties = {};
+        this.setId(properties);
+    }
+
+    /**
+     * * Set the Form ID.
+     * @param {object} properties - Form properties.
+     * @memberof Form
+     */
+    setId(properties = {
+        id: 'validation-1'
+    }){
+        this.properties.id = properties.id;
+    }
+
+    /**
+     * * Set the Form HTML Element.
+     * @memberof Form
+     */
+    setHTML(){
+        this.html = document.querySelector(`#${this.properties.id}`);
+    }
+
+    /**
+     * * Set the Form submit button HTML Element.
+     * @memberof Form
+     */
+    setSubmitButton(){
+        let instance = this;
+        this.btnSubmit = document.querySelector(`#${this.properties.id} .form-submit`);
+        this.btnSubmit.addEventListener('click', function(e){
             e.preventDefault();
-            Validation.validate(aux.className);
+            Validation.validate(instance);
         });
     }
-    /** Set all the inputs and textareas. */
-    setInputs(){
-        let HTMLElements = Input.getHTMLElements(this.className);
-        let aux = [];
-        for(let HTMLElement of HTMLElements){
-            aux.push(new Input(HTMLElement.name, this.className, aux));
-        }
-        this.inputs = aux;
-    }
-    /** Set the Form Rules. */
-    setRules(){
-        this.rules = [];
-        let rules = Rule.getAll(this.className);
-        for(let target in rules){
-            if(target.search(/\./) > 0){
-                Rule.addArrayMode(this.rules, target, rules[target]);
-            }else{
-                this.rules.push(new Rule(target, rules[target]));
-            }
-        }
-    }
-    /** Set the Form Messages. */
-    setMessages(){
-        this.messages = [];
-        let messages = Message.getAll(this.className);
-        for(let target in messages){
-            if(target.search(/\.\*\./) > 0){
-                Message.addArrayMode(this.messages, target, messages[target]);
-            }else{
-                Message.push(this.messages, target, messages[target]);
-            }
-        }
-    }
+
     /**
-     * Get an input.
-     * @param {string} name - The Input name.
-     * @return {Input}
+     * * Set the Form Inputs.
+     * @memberof Form
      */
-    getInput(name){
-        let selected = [];
-        for(let input of this.inputs){
-            if(input.name == name){
-                selected.push(input);
+    setInputs(){
+        this.inputs = Input.getHTMLElements(this);
+    }
+
+    /**
+     * * Set the Form Rules.
+     * @memberof Form
+     */
+    setRules(){
+        this.rules = Rule.getAll(JSON.parse((this.html.dataset.rules)));
+    }
+
+    /**
+     * * Set the Form Messages.
+     * @memberof Form
+     */
+    setMessages(){
+        this.messages = Message.getAll(JSON.parse((this.html.dataset.messages)));
+    }
+
+    /**
+     * * Get a Form Input.
+     * @param {string} target - Rule target.
+     * @returns
+     * @memberof Form
+     */
+    getInput(target = undefined){
+        for (const input of this.inputs) {
+            if(input.properties.name == target){
+                return input;
             }
         }
-        selected = this.getCKEditor(selected);
-        return selected;
     }
+
+    /**
+     * * Get the Messages from an Input.
+     * @param {Input} input - Input.
+     * @returns
+     * @memberof Form
+     */
+    getMessagesFromInput(input = undefined){
+        let messages = [];
+        for (const message of this.messages) {
+            if(message.properties.target == input.properties.name){
+                messages.push(message);
+            }
+        }
+        return messages;
+    }
+
     /**
      * Get the CKEditor value
      * @param {Input[]} selected - All the inputs selected.
@@ -90,17 +140,5 @@ class Form{
             }
         }
         return selected;
-    }
-    /**
-     * Find a Form by his class name.
-     * @param {Form[]} forms - All the Forms made.
-     * @param {string} className - The Form class name.
-     */
-    static get(forms, className){
-        for(let form of forms){
-            if(form.className == className){
-                return form;
-            }
-        }
     }
 };

@@ -1,221 +1,377 @@
 /**
- * Manage the Requirements from the validation.
+ * * Requirement controls the Rule requirements.
+ * @export
  * @class Requirement
  */
-class Requirement{
+export class Requirement{
     /**
-     * Requirement constructor.
-     * @param {string} target - The target of the Rule.
-     * @param {string} requirements - The Requirements of the Rule.
+     * * Creates an instance of Requirement.
+     * @param {object} properties - Requirement properties.
+     * @memberof Requirement
      */
-    constructor(requirement){
-        if(requirement.search(/:/) > 0){
-            requirement = requirement.split(":");
-            this.name = requirement[0];
-            if(requirement[1].search(/,/) > 0){
-                this.params = requirement[1].split(',');
-            }else{
-                this.params = requirement[1];
-            }
-        }else{
-            this.name = requirement;
-        }
+    constructor(properties = {
+        name: undefined,
+    }){
+        this.setProperties(properties);
     }
+
     /**
-     * Make an input required.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Set the Requirement properties.
+     * @param {object} properties - Requirement properties.
+     * @memberof Requirement
      */
-    static required(aux){
+    setProperties(properties = {
+        name: undefined,
+    }){
+        this.properties = {};
+        let regexp = new RegExp(':')
+        if(regexp.exec(properties.name)){
+            let aux = properties.name.split(':');
+            properties.name = aux[0];
+            properties.param = aux[1];
+        }
+        this.setName(properties);
+        this.setParam(properties);
+    }
+
+    /**
+     * * Set the Requirement name.
+     * @param {object} properties - Requirement properties.
+     * @memberof Requirement
+     */
+    setName(properties = {
+        name: undefined
+    }){
+        this.properties.name = properties.name;
+    }
+
+    /**
+     * * Set the Requirement param.
+     * @param {object} properties - Requirement properties.
+     * @memberof Requirement
+     */
+    setParam(properties = {
+        param: undefined
+    }){
+        this.properties.param = properties.param;
+    }
+
+    /**
+     * * Execute the Requirement.
+     * @param {Input} input - Input to validate.
+     * @memberof Requirement
+     */
+    execute(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
+        if(this.properties.param){
+            status = Requirement[this.properties.name](input, status, this.properties.param);
+        }else{
+            status = Requirement[this.properties.name](input, status);
+        }
+        return status;
+    }
+
+    /**
+     * * Make an Input required.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
+     */
+    static required(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let valid = false;
-        for(let input of aux.inputs){
-            if(input.HTML.value){
+        for (const html of input.htmls) {
+            if(html.value){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('required', aux, input);
+                status = this.setError({
+                    name: 'required',
+                }, input, status);
             }
         }
-        aux.required = true;
-        aux.valid = valid;
-        return aux
-    };
+        status.required = true;
+        status.valid = valid;
+        return status;
+    }
+
     /**
-     * Make an input nullable.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input nullable.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static nullable(aux){
+    static nullable(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let required = true;
-        for(let input of aux.inputs){
-            if(!input.HTML.value){
+        for (const html of input.htmls) {
+            if(!html.value){
                 required = false;
             }
         }
-        aux.required = required;
-        aux.valid = true;
-        return aux
+        status.required = required;
+        status.valid = true;
+        return status;
     }
+
     /**
-     * Make an input numeric.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input numeric.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static numeric(aux){
+    static numeric(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let valid = true;
-        for(let input of aux.inputs){
-            if(!isNaN(input.HTML.value)){
+        for (const html of input.htmls) {
+            if(!isNaN(html.value)){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('numeric', aux, input);
+                status = this.setError({
+                    name: 'numeric',
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Make an input string.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input string.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static string(aux){
+    static string(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let valid = true;
-        for(let input of aux.inputs){
-            if(typeof input.HTML.value == 'string'){
+        for (const html of input.htmls) {
+            if(typeof html.value == 'string'){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('string', aux, input);
+                status = this.setError({
+                    name: 'string',
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Make an input an email.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input email.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static email(aux){
-        let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    static email(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
+        let regexp = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
         let valid = true;
-        for(let input of aux.inputs){
-            if(re.test(input.HTML.value)){
+        for (const html of input.htmls) {
+            if(regexp.exec(html.value)){
+                console.log(true);
+                valid = true;
+            }else{
+                console.log(false);
+                valid = false;
+                status = this.setError({
+                    name: 'email',
+                }, input, status);
+            }
+        }
+        status.valid = valid;
+        return status;
+    }
+
+    /**
+     * * Make an Input date.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
+     */
+    static date(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
+        let valid = true;
+        for (const html of input.htmls) {
+            if(Date.parse(html.value)){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('email', aux, input);
+                status = this.setError({
+                    name: 'date',
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Make an input a date.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input an array.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static date(aux){
+    static array(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let valid = true;
-        for(let input of aux.inputs){
-            if(Date.parse(input.HTML.value)){
-                valid = true;
-            }else{
-                valid = false;
-                aux = this.getError('date', aux, input);
-            }
-        }
-        aux.valid = valid;
-        return aux
-    }
-    /**
-     * Make an input an array.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
-     */
-    static array(aux){
-        let valid = true;
-        for(let input of aux.inputs){
+        for (const html of input.htmls) {
             if(input.array){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('array', aux, input);
+                status = this.setError({
+                    name: 'array',
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Make an input an url.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Make an Input an url.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static url(aux){
+    static url(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
         let valid = true;
-        for(let input of aux.inputs){
-            if(input.HTML.value.search(/https:\/\//) == 0 && input.HTML.value.search(/\./) >= 0){
+        let https = new RegExp('https:\/\/');
+        let http = new RegExp('http:\/\/');
+        let dotCom = new RegExp('\.com');
+        let dotOrg = new RegExp('\.org');
+        for (const html of input.htmls) {
+            if(https.exec(html.value) && (dotCom.exec(html.value) || dotOrg.exec(html.value))){
                 valid = true;
-            }else if(input.HTML.value.search(/http:\/\//) == 0 && input.HTML.value.search(/\./) >= 0){
-                valid = true;
-            }else{
-                valid = false;
-                aux = this.getError('url', aux, input);
-            }
-        }
-        aux.valid = valid;
-        return aux
-    }
-    /**
-     * Put a min length on an input.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
-     */
-    static min(aux, params){
-        let valid = true;
-        for(let input of aux.inputs){
-            if(input.HTML.value.length >= parseInt(params)){
+            }else if(http.exec(html.value) && (dotCom.exec(html.value) || dotOrg.exec(html.value))){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('min', aux, input);
+                status = this.setError({
+                    name: 'url',
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Put a max length on an input.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Put a min length on an Input.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @param {*} param - Requirement param.
+     * @returns
+     * @memberof Requirement
      */
-    static max(aux, params){
+    static min(input = undefined, status = {
+        required: true,
+        valid: true,
+    }, param = undefined){
         let valid = true;
-        for(let input of aux.inputs){
-            // console.log(input.HTML.value.length);
-            if(input.HTML.value.length <= parseInt(params)){
+        for (const html of input.htmls) {
+            if(html.value.length >= parseInt(param)){
                 valid = true;
             }else{
                 valid = false;
-                aux = this.getError('max', aux, input);
+                status = this.setError({
+                    name: 'min',
+                    param: param,
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
+
     /**
-     * Put mimetypes on an input.
-     * @param {object} aux - An auxiliar.
-     * @return {object}
+     * * Put a max length on an Input.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @param {*} param - Requirement param.
+     * @returns
+     * @memberof Requirement
      */
-    static mimetypes(aux, params){
+    static max(input = undefined, status = {
+        required: true,
+        valid: true,
+    }, param = undefined){
         let valid = true;
-        for(let input of aux.inputs){
-            if(input.HTML.files && input.HTML.files.length){
+        for (const html of input.htmls) {
+            if(html.value.length <= parseInt(param)){
+                valid = true;
+            }else{
+                valid = false;
+                status = this.setError({
+                    name: 'max',
+                    param: param,
+                }, input, status);
+            }
+        }
+        status.valid = valid;
+        return status;
+    }
+
+    /**
+     * * Put mimetypes on an Input.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @param {*} param - Requirement param.
+     * @returns
+     * @memberof Requirement
+     */
+    static mimetypes(input = undefined, status = {
+        required: true,
+        valid: true,
+    }, param = undefined){
+        let valid = true;
+        for (const html of input.htmls) {
+            if(html.files && html.files.length){
                 let found = false;
-                for(let file of input.HTML.files){
-                    for(let param of params){
+                for(let file of html.files){
+                    for(let param of param){
                         if(file.type == param){
                             found = true;
                         }
@@ -225,50 +381,61 @@ class Requirement{
                     valid = true;
                 }else{
                     valid = false;
-                    aux = this.getError('mimetypes', aux, input);
+                    status = this.setError({
+                        name: 'mimetypes',
+                        param: param,
+                    }, input, status);
                 }
             }else{
                 valid = false;
-                aux = this.getError('mimetypes', aux, input);
+                status = this.setError({
+                    name: 'mimetypes',
+                    param: param,
+                }, input, status);
             }
         }
-        aux.valid = valid;
-        return aux
+        status.valid = valid;
+        return status;
     }
-    static exists(aux, params){
-        //
+
+    static exists(input = undefined, status = {
+        required: true,
+        valid: true,
+    }, param = undefined){
+        // TODO Get data from api with FetchServiceProvider.
+        console.log(input);
+        console.log(param);
     }
-    static unique(aux, params){
-        //
+
+    static unique(input = undefined, status = {
+        required: true,
+        valid: true,
+    }, param = undefined){
+        // TODO Get data from api with FetchServiceProvider.
+        console.log(input);
+        console.log(param);
     }
+
     /**
-     * Make an error property in the auxiliary array.
-     * @param {string} name - The Requirement name.
-     * @param {object} aux - An auxiliar object.
-     * @param {Input} input - The invalid Input.
-     * @return {object}
+     * * Create the error.
+     * @static
+     * @param {object} requirement - Requirement.
+     * @param {Input} input - Input to validate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
      */
-    static getError(name, aux, input){
-        let req;
-        for(let requirement of aux.requirements){
-            if(requirement.name == name){
-                req = requirement;
-            }
+    static setError(requirement = undefined, input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
+        if(!status.errors){
+            status.errors = [];
         }
-        if(aux.errors){
-            aux.errors.push({
-                target: aux.inputs[0].name,
-                requirement: req,
-                input: input,
-            });
-        }else{
-            aux.errors = [];
-            aux.errors.push({
-                target: aux.inputs[0].name,
-                requirement: req,
-                input: input,
-            });
-        }
-        return aux;
+        status.errors.push({
+            target: input.properties.name,
+            requirement: requirement,
+        });
+        return status;
     }
 };
