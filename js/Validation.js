@@ -52,31 +52,6 @@ export class Validation{
     }
 
     /**
-     * Execute the Requirement and valide, or not, the input.
-     * @param {object} aux - An auxiliar of validation.
-     */
-    callRequirement(aux){
-        let requirements = Rule.attach(aux);
-        for(let requirement of requirements){
-            if(aux.valid && aux.required){
-                aux = Requirement[requirement.name](aux, requirement.params);
-                if(aux.valid){
-                    Validator.set(aux.inputs);
-                }else{
-                    for(let message of aux.form.messages){
-                        for(let error of aux.errors){
-                            if(message.target == error.target){
-                                Invalidator.set(error, message.getOne(error));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return aux;
-    }
-
-    /**
      * Update a Form.
      * @param {string} className - The Form class name.
      */
