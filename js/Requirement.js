@@ -87,14 +87,24 @@ export class Requirement{
     }){
         let valid = false;
         for (const html of input.htmls) {
-            if(html.value){
-                valid = true;
+            if(input.properties.type == 'select'){
+                if(!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value){
+                    valid = true;
+                }
+            }else if(input.properties.type == 'checkbox'){
+                if(html.checked){
+                    valid = true;
+                }
             }else{
-                valid = false;
-                status = this.setError({
-                    name: 'required',
-                }, input, status);
+                if(html.value){
+                    valid = true;
+                }
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'required',
+            }, input, status);
         }
         status.required = true;
         status.valid = valid;
@@ -115,8 +125,20 @@ export class Requirement{
     }){
         let required = true;
         for (const html of input.htmls) {
-            if(!html.value){
-                required = false;
+            if(input.properties.type == 'select'){
+                if(html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value){
+                    required = false;
+                }
+            }else if(input.properties.type == 'checkbox'){
+                if(!html.checked){
+                    required = false;
+                }else{
+                    required = true;
+                }
+            }else{
+                if(!html.value){
+                    required = false;
+                }
             }
         }
         status.required = required;
@@ -136,16 +158,16 @@ export class Requirement{
         required: true,
         valid: true,
     }){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(!isNaN(html.value)){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'numeric',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'numeric',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -163,16 +185,16 @@ export class Requirement{
         required: true,
         valid: true,
     }){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(typeof html.value == 'string'){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'string',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'string',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -191,18 +213,16 @@ export class Requirement{
         valid: true,
     }){
         let regexp = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(regexp.exec(html.value)){
-                console.log(true);
                 valid = true;
-            }else{
-                console.log(false);
-                valid = false;
-                status = this.setError({
-                    name: 'email',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'email',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -220,16 +240,16 @@ export class Requirement{
         required: true,
         valid: true,
     }){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(Date.parse(html.value)){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'date',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'date',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -247,16 +267,16 @@ export class Requirement{
         required: true,
         valid: true,
     }){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(input.array){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'array',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'array',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -274,7 +294,7 @@ export class Requirement{
         required: true,
         valid: true,
     }){
-        let valid = true;
+        let valid = false;
         let https = new RegExp('https:\/\/');
         let http = new RegExp('http:\/\/');
         let dotCom = new RegExp('\.com');
@@ -284,12 +304,12 @@ export class Requirement{
                 valid = true;
             }else if(http.exec(html.value) && (dotCom.exec(html.value) || dotOrg.exec(html.value))){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'url',
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'url',
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -308,17 +328,17 @@ export class Requirement{
         required: true,
         valid: true,
     }, param = undefined){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(html.value.length >= parseInt(param)){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'min',
-                    param: param,
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'min',
+                param: param,
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -337,17 +357,17 @@ export class Requirement{
         required: true,
         valid: true,
     }, param = undefined){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(html.value.length <= parseInt(param)){
                 valid = true;
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'max',
-                    param: param,
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'max',
+                param: param,
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -366,7 +386,7 @@ export class Requirement{
         required: true,
         valid: true,
     }, param = undefined){
-        let valid = true;
+        let valid = false;
         for (const html of input.htmls) {
             if(html.files && html.files.length){
                 let found = false;
@@ -379,20 +399,14 @@ export class Requirement{
                 }
                 if(found){
                     valid = true;
-                }else{
-                    valid = false;
-                    status = this.setError({
-                        name: 'mimetypes',
-                        param: param,
-                    }, input, status);
                 }
-            }else{
-                valid = false;
-                status = this.setError({
-                    name: 'mimetypes',
-                    param: param,
-                }, input, status);
             }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'mimetypes',
+                param: param,
+            }, input, status);
         }
         status.valid = valid;
         return status;
@@ -405,6 +419,7 @@ export class Requirement{
         // TODO Get data from api with FetchServiceProvider.
         console.log(input);
         console.log(param);
+        return status;
     }
 
     static unique(input = undefined, status = {
@@ -414,6 +429,27 @@ export class Requirement{
         // TODO Get data from api with FetchServiceProvider.
         console.log(input);
         console.log(param);
+        return status;
+    }
+
+    static confirmed(input = undefined, status = {
+        required: true,
+        valid: true,
+    }){
+        let valid = false;
+        for (const html of input.htmls) {
+            let input_confirmation = document.querySelector(`[name=${input.properties.name}_confirmation]`);
+            if(html.value == input_confirmation.value){
+                valid = true;
+            }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'confirmed',
+            }, input, status);
+        }
+        status.valid = valid;
+        return status;
     }
 
     /**

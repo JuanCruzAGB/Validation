@@ -9,6 +9,7 @@ export class Validation{
     /**
      * * Creates an instance of Validation.
      * @param {object} properties - Validation properties.
+     * @param {object} conditional - Validation conditional.
      * @memberof Validation
      */
     constructor(properties = {
@@ -39,6 +40,28 @@ export class Validation{
         id: 'validation-1'
     }){
         this.properties.id = properties.id;
+    }
+
+    /**
+     * * Set the Validation properties.
+     * @param {object} conditional - Validation conditional.
+     * @memberof Validation
+     */
+    setConditional(conditional = {
+        target: undefined,
+        comparator: '=',
+        value: undefined
+    }){
+        this.conditional = {};
+        if(conditional.target){
+            this.conditional.target = conditional.target;
+        }
+        if(conditional.comparator){
+            this.conditional.comparator = conditional.comparator;
+        }
+        if(conditional.value){
+            this.conditional.value = conditional.value;
+        }
     }
 
     /**
@@ -168,6 +191,8 @@ export class Validation{
         for (const html of input.htmls) {
             html.classList.remove('invalid');
             html.classList.add('valid');
+        }
+        if(input.support){
             input.support.removeError();
         }
     }
@@ -181,6 +206,8 @@ export class Validation{
         for (const html of input.htmls) {
             html.classList.remove('valid');
             html.classList.add('invalid');
+        }
+        if(input.support){
             input.support.addError(message);
         }
     }

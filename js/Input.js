@@ -17,7 +17,7 @@ export class Input{
     constructor(properties = {
         id: 'validation-1',
     }, html = undefined, Form = undefined){
-        this.setHTML(html);
+        this.setHTML(html, Form);
         this.setProperties(properties);
         this.setSupport();
         this.setEvent(Form);
@@ -61,7 +61,7 @@ export class Input{
                 this.properties.type = 'text';
                 break;
             case 'SELECT':
-                this.properties.type = null;
+                this.properties.type = 'select';
                 break;
         }
     }
@@ -71,17 +71,41 @@ export class Input{
      * @memberof Input
      */
     setName(){
-        this.properties.name = this.htmls[0].name;
+        let regexp = /\[/;
+        let name = this.htmls[0].name;
+        if(regexp.exec(this.htmls[0].name)){
+            name = this.htmls[0].name.split('[').shift();
+        }
+        this.properties.name = name;
     }
 
     /**
      * * Set the Input HTML Element.
      * @param {HTMLElement} html - Input HTML Element.
+     * @param {Form} Form - Form.
      * @memberof Input
      */
-    setHTML(html = undefined){
+    setHTML(html = undefined, Form = undefined){
         this.htmls = [];
         this.htmls.push(html);
+        if(html.classList.contains('confirmation')){
+            this.setConfirmationInput(Form, html.name);
+        }
+    }
+
+    /**
+     * * Set the confirmation Input.
+     * @param {Form} Form - Form.
+     * @param {string} name - Input name.
+     * @memberof Input
+     */
+    setConfirmationInput(Form = undefined, name = undefined){
+        if(!this.confirmation){
+            this.confirmation = [];
+        }
+        let input = document.querySelector(`[name="${name}_confirmation"]`);
+        this.confirmation.push(input);
+        this.setConfirmationEvent(input, Form);
     }
 
     /**
@@ -90,20 +114,35 @@ export class Input{
      */
     setSupport(){
         let html;
-        if(html = document.querySelector(`#${this.properties.id} [name=${this.properties.name}] + .support`)){
+        if(html = document.querySelector(`#${this.properties.id} .support-${this.properties.name}`)){
             this.support = new Support(html);
         }
     }
 
     /**
      * * Set the Input event.
+     * @param {Form} Form - Form.
      * @memberof Input
      */
     setEvent(Form = undefined){
         let instance = this;
         switch (this.properties.type) {
+            case 'file':
+                this.htmls[0].addEventListener('change', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                break;
+            case 'radio':
+                // TODO
+                break;
             case 'checkbox':
-                console.log(this);
+                for (const html of this.htmls) {
+                    html.addEventListener('change', function(e){
+                        e.preventDefault();
+                        Validation.validate(Form, instance);
+                    });
+                }
                 break;
             case null:
                 this.htmls[0].addEventListener('change', function(e){
@@ -114,7 +153,7 @@ export class Input{
             default:
                 if(this.htmls[0].nodeName == 'TEXTAREA'){
                     if(this.checkCKEditor()){
-                        CKEDITOR.instances[this.html.name].on('change', function(){
+                        CKEDITOR.instances[this.htmls[0].name].on('change', function(){
                             CKEDITOR.instances[instance.html.name].updateElement();
                             Validation.validate(Form, instance);
                         });
@@ -130,6 +169,24 @@ export class Input{
                         Validation.validate(Form, instance);
                     });
                 }
+                break;
+        }
+    }
+
+    /**
+     * * Set the Input confirmation event.
+     * @param {HTMLElement} input - Confirmation Input.
+     * @param {Form} Form - Form.
+     * @memberof Input
+     */
+    setConfirmationEvent(input = undefined, Form = undefined){
+        let instance = this;
+        switch (input.type) {
+            default:
+                input.addEventListener('keyup', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
                 break;
         }
     }
@@ -159,15 +216,39 @@ export class Input{
      * @memberof Input
      */
     static getHTMLElements(Form = undefined){
-        let auxHtml = document.querySelectorAll(`#${Form.properties.id} input.form-input, #${Form.properties.id} textarea.form-input`),
+        let auxHtml = document.querySelectorAll(`#${Form.properties.id} input.form-input, #${Form.properties.id} textarea.form-input, #${Form.properties.id} select.form-input`),
             htmls = [],
             names = [];
+            let regexp = /\[/;
         for (const html of auxHtml) {
-            if(names.indexOf(html.name) == -1){
-                htmls.push(new this({id: Form.properties.id}, html, Form));
-                names.push(html.name);
+            let name = html.name;
+            if(regexp.exec(name)){
+                name = name.split('[').shift();
+            }
+            if(html.type != 'checkbox'){
+                if(names.indexOf(name) == -1){
+                    htmls.push(new this({id: Form.properties.id}, html, Form));
+                    names.push(name);
+                }else{
+                    htmls[names.indexOf(name)].addInput(html);
+                }
             }else{
-                htmls[names.indexOf(html.name)].addInput(html);
+                if(!htmls.length){
+                    htmls.push(new this({id: Form.properties.id}, html, Form));
+                }else{
+                    let push = true;
+                    for (const htmlPushed of htmls) {
+                        if(htmlPushed.properties.type == 'checkbox'){
+                            if(htmlPushed.properties.name == name){
+                                push = false;
+                                htmlPushed.addInput(html);
+                            }
+                        }
+                    }
+                    if(push){
+                        htmls.push(new this({id: Form.properties.id}, html, Form));
+                    }
+                }
             }
         }
         return htmls;
