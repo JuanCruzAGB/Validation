@@ -295,14 +295,9 @@ export class Requirement{
         valid: true,
     }){
         let valid = false;
-        let https = new RegExp('https:\/\/');
-        let http = new RegExp('http:\/\/');
-        let dotCom = new RegExp('\.com');
-        let dotOrg = new RegExp('\.org');
+        let regexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
         for (const html of input.htmls) {
-            if(https.exec(html.value) && (dotCom.exec(html.value) || dotOrg.exec(html.value))){
-                valid = true;
-            }else if(http.exec(html.value) && (dotCom.exec(html.value) || dotOrg.exec(html.value))){
+            if(regexp.exec(html.value)){
                 valid = true;
             }
         }
