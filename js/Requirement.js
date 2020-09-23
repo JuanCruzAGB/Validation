@@ -412,8 +412,8 @@ export class Requirement{
         valid: true,
     }, param = undefined){
         // TODO Get data from api with FetchServiceProvider.
-        console.log(input);
-        console.log(param);
+        // console.log(input);
+        // console.log(param);
         return status;
     }
 
@@ -422,8 +422,8 @@ export class Requirement{
         valid: true,
     }, param = undefined){
         // TODO Get data from api with FetchServiceProvider.
-        console.log(input);
-        console.log(param);
+        // console.log(input);
+        // console.log(param);
         return status;
     }
 

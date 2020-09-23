@@ -154,7 +154,7 @@ export class Input{
                 if(this.htmls[0].nodeName == 'TEXTAREA'){
                     if(this.checkCKEditor()){
                         CKEDITOR.instances[this.htmls[0].name].on('change', function(){
-                            CKEDITOR.instances[instance.html.name].updateElement();
+                            CKEDITOR.instances[instance.htmls[0].name].updateElement();
                             Validation.validate(Form, instance);
                         });
                     }else{
