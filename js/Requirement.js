@@ -382,11 +382,12 @@ export class Requirement{
         valid: true,
     }, param = undefined){
         let valid = false;
+        let params = param.split(',');
         for (const html of input.htmls) {
             if(html.files && html.files.length){
                 let found = false;
                 for(let file of html.files){
-                    for(let param of param){
+                    for(let param of params){
                         if(file.type == param){
                             found = true;
                         }
