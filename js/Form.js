@@ -17,13 +17,13 @@ export class Form{
      */
     constructor(properties = {
         id: 'validation-1'
-    }){
+    }, rules = [], messages = []){
         this.setProperties(properties);
         this.setHTML();
         this.setSubmitButton();
         this.setInputs();
-        this.setRules();
-        this.setMessages();
+        this.setRules(rules);
+        this.setMessages(messages);
     }
 
     /**
@@ -54,7 +54,7 @@ export class Form{
      * @memberof Form
      */
     setHTML(){
-        this.html = document.querySelector(`#${this.properties.id}`);
+        this.html = document.querySelector(`form#${this.properties.id}`);
     }
 
     /**
@@ -63,7 +63,7 @@ export class Form{
      */
     setSubmitButton(){
         let instance = this;
-        this.btnSubmit = document.querySelector(`#${this.properties.id} .form-submit`);
+        this.btnSubmit = document.querySelector(`.form-submit.${this.properties.id}`);
         this.btnSubmit.addEventListener('click', function(e){
             e.preventDefault();
             Validation.validate(instance);
@@ -82,16 +82,16 @@ export class Form{
      * * Set the Form Rules.
      * @memberof Form
      */
-    setRules(){
-        this.rules = Rule.getAll(JSON.parse((this.html.dataset.rules)));
+    setRules(rules = []){
+        this.rules = Rule.getAll(rules);
     }
 
     /**
      * * Set the Form Messages.
      * @memberof Form
      */
-    setMessages(){
-        this.messages = Message.getAll(JSON.parse((this.html.dataset.messages)));
+    setMessages(messages = []){
+        this.messages = Message.getAll(messages);
     }
 
     /**

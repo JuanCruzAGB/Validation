@@ -2,6 +2,17 @@ body{
     --invalid-color: rgba(217,83,79,0.9);
 }
 
+.support{
+    display: inline-block;
+    margin-top: .25rem;
+    padding: .25rem;
+    border-radius: .25rem;
+}
+
+.support.hidden{
+    display: none;
+}
+
 .support-tooltip{
     position: relative;
 }
@@ -54,10 +65,8 @@ body{
 
 .support-box{
     position: initial;
-    display: none;
     background: var(--invalid-color);
     color: #fff;
-    margin: 0;
 }
 
 .support-box.showed{

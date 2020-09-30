@@ -9,14 +9,15 @@ export class Validation{
     /**
      * * Creates an instance of Validation.
      * @param {object} properties - Validation properties.
-     * @param {object} conditional - Validation conditional.
+     * @param {object} rules - Validation Rules.
+     * @param {object} messages - Validation Messages.
      * @memberof Validation
      */
     constructor(properties = {
         id: 'validation-1',
-    }){
+    }, rules = [], messages = []){
         this.setProperties(properties);
-        this.setForm();
+        this.setForm(rules, messages);
     }
 
     /**
@@ -42,6 +43,7 @@ export class Validation{
         this.properties.id = properties.id;
     }
 
+    // TODO
     /**
      * * Set the Validation properties.
      * @param {object} conditional - Validation conditional.
@@ -66,12 +68,14 @@ export class Validation{
 
     /**
      * * Set the Validation HTML Element.
+     * @param {object} rules - Validation Rules.
+     * @param {object} messages - Validation Messages.
      * @memberof Validation
      */
-    setForm(){
+    setForm(rules = [], messages = []){
         this.form = new Form({
             id: this.properties.id,
-        });
+        }, rules, messages);
     }
 
     /**

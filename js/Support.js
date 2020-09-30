@@ -57,7 +57,7 @@ export class Support{
      */
     addError(message = ''){
         switch(this.properties.type){
-            case 'box':
+            default:
                 this.html.innerHTML = message;
                 this.html.classList.remove('hidden');
                 break;
@@ -74,6 +74,23 @@ export class Support{
                 this.html.innerHTML = '';
                 this.html.classList.add('hidden');
                 break;
+        }
+    }
+
+    /**
+     * * Get the Support HTML Element.
+     * @static
+     * @param {object} properties - Input properties.
+     * @returns
+     * @memberof Support
+     */
+    static getHTML(properties = {
+        id: 'validation-1',
+        name: '',
+    }){
+        let html;
+        if(html = document.querySelector(`form#${properties.id} .support-${properties.name}`)){
+            return new this(html);
         }
     }
 }
