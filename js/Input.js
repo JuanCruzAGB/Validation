@@ -132,6 +132,16 @@ export class Input{
             case 'radio':
                 // TODO
                 break;
+            case 'date':
+                this.htmls[0].addEventListener('change', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                this.htmls[0].addEventListener('keyup', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                break;
             case 'checkbox':
                 for (const html of this.htmls) {
                     html.addEventListener('change', function(e){
