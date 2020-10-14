@@ -124,13 +124,18 @@ export class Input{
         let instance = this;
         switch (this.properties.type) {
             case 'file':
-                this.htmls[0].addEventListener('change', function(e){
-                    e.preventDefault();
-                    Validation.validate(Form, instance);
-                });
+                this.setChangeEvent(Form);
                 break;
             case 'radio':
                 // TODO
+                break;
+            case 'hidden':
+                for (const btn of document.querySelectorAll(`.${this.properties.name}-trigger`)) {
+                    btn.addEventListener('click', function(e){
+                        e.preventDefault();
+                        Validation.validate(Form, instance);
+                    });
+                }
                 break;
             case 'date':
                 this.htmls[0].addEventListener('change', function(e){
