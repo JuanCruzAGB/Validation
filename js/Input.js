@@ -124,7 +124,10 @@ export class Input{
         let instance = this;
         switch (this.properties.type) {
             case 'file':
-                this.setChangeEvent(Form);
+                this.htmls[0].addEventListener('change', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
                 break;
             case 'radio':
                 // TODO

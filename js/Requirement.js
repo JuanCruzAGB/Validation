@@ -428,6 +428,14 @@ export class Requirement{
         return status;
     }
 
+    /**
+     * * Make a confirm Input.
+     * @static
+     * @param {Input} input - Input to valdiate.
+     * @param {object} status - Validation status.
+     * @returns
+     * @memberof Requirement
+     */
     static confirmed(input = undefined, status = {
         required: true,
         valid: true,
