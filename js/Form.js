@@ -16,7 +16,8 @@ export class Form{
      * @memberof Form
      */
     constructor(properties = {
-        id: 'validation-1'
+        id: 'validation-1',
+        submit: true,
     }, rules = [], messages = []){
         this.setProperties(properties);
         this.setHTML();
@@ -32,10 +33,12 @@ export class Form{
      * @memberof Form
      */
     setProperties(properties = {
-        id: 'validation-1'
+        id: 'validation-1',
+        submit: true,
     }){
         this.properties = {};
         this.setId(properties);
+        this.setSubmit(properties);
     }
 
     /**
@@ -50,11 +53,27 @@ export class Form{
     }
 
     /**
+     * * Set the Form submit boolean.
+     * @param {object} properties - Form properties.
+     * @memberof Form
+     */
+    setSubmit(properties = {
+        submit: true,
+    }){
+        this.properties.submit = properties.submit;
+    }
+
+    /**
      * * Set the Form HTML Element.
      * @memberof Form
      */
     setHTML(){
+        let instance = this;
         this.html = document.querySelector(`form#${this.properties.id}`);
+        this.html.addEventListener('submit', function(e){
+            e.preventDefault();
+            Validation.validate(instance);
+        });
     }
 
     /**

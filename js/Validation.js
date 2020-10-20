@@ -15,6 +15,7 @@ export class Validation{
      */
     constructor(properties = {
         id: 'validation-1',
+        submit: true,
     }, rules = [], messages = []){
         this.setProperties(properties);
         this.setForm(rules, messages);
@@ -26,10 +27,12 @@ export class Validation{
      * @memberof Validation
      */
     setProperties(properties = {
-        id: 'validation-1'
+        id: 'validation-1',
+        submit: true,
     }){
         this.properties = {};
         this.setId(properties);
+        this.setSubmit(properties);
     }
 
     /**
@@ -41,6 +44,17 @@ export class Validation{
         id: 'validation-1'
     }){
         this.properties.id = properties.id;
+    }
+
+    /**
+     * * Set the Validation submit confirmation.
+     * @param {object} properties - Validation properties.
+     * @memberof Validation
+     */
+    setSubmit(properties = {
+        submit: true,
+    }){
+        this.properties.submit = properties.submit;
     }
 
     // TODO
@@ -75,6 +89,7 @@ export class Validation{
     setForm(rules = [], messages = []){
         this.form = new Form({
             id: this.properties.id,
+            submit: this.properties.submit,
         }, rules, messages);
     }
 
@@ -115,7 +130,21 @@ export class Validation{
                 valid = false;
             }
         }
-        if(valid && input === null){
+        switch (valid) {
+            case true:
+                if(form.html.classList.contains('invalid')){
+                    form.html.classList.remove('invalid');
+                }
+                form.html.classList.add('valid');
+                break;
+            case false:
+                if(form.html.classList.contains('valid')){
+                    form.html.classList.remove('valid');
+                }
+                form.html.classList.add('invalid');
+                break;
+        }
+        if(valid && input === null && form.properties.submit){
             form.html.submit();
         }
     }
