@@ -54,7 +54,11 @@ export class Validation{
     setSubmit(properties = {
         submit: true,
     }){
-        this.properties.submit = properties.submit;
+        if(typeof properties.submit == 'boolean'){
+            this.properties.submit = properties.submit;
+        }else{
+            this.properties.submit = true;
+        }
     }
 
     // TODO
