@@ -63,7 +63,7 @@ export class Form{
      */
     setStates(){
         this.states = {}
-        this.setValid();
+        this.setValid({});
     }
 
     /**

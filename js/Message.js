@@ -81,7 +81,7 @@ export class Message{
         text: undefined
     }){
         this.requirements = {};
-        if (properties.hasOwnProperty('target')) {
+        if (requirements.hasOwnProperty('name') && requirements.hasOwnProperty('text')) {
             this.requirements = {
                 [requirements.name]: requirements.text,
             };
@@ -128,7 +128,7 @@ export class Message{
         text: undefined
     }){
         if (requirement.hasOwnProperty('name') && requirement.hasOwnProperty('text')) {
-            this.requirements[requirements.name] = requirements.text;
+            this.requirements[requirement.name] = requirement.text;
         } else {
             console.error('There is not a new requirement Message.');
         }
