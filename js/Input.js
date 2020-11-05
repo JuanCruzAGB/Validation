@@ -1,3 +1,4 @@
+// * ValidationJS repository.
 import { Support } from "./Support.js";
 import { Validation } from "./Validation.js";
 
@@ -9,9 +10,10 @@ import { Validation } from "./Validation.js";
 export class Input{
     /**
      * * Creates an instance of Input.
-     * @param {object} properties - Input properties.
-     * @param {HTMLElement} html - Input HTML Element.
-     * @param {Form} Form - Input Form.
+     * @param {Object} properties Input properties.
+     * @param {Object} properties.id Input ID.
+     * @param {HTMLElement} html Input HTML Element.
+     * @param {Form} Form Parent Form.
      * @memberof Input
      */
     constructor(properties = {
@@ -25,7 +27,8 @@ export class Input{
 
     /**
      * * Set the Input properties.
-     * @param {object} properties - Input properties.
+     * @param {Object} properties Input properties.
+     * @param {Object} properties.id Input ID.
      * @memberof Input
      */
     setProperties(properties = {
@@ -38,14 +41,37 @@ export class Input{
     }
 
     /**
+     * * Returns the Input properties.
+     * @returns {Object} The Input properties.
+     * @memberof Input
+     */
+    getProperties(){
+        return this.properties;
+    }
+
+    /**
      * * Set the Input ID.
-     * @param {object} properties - Input properties.
+     * @param {Object} properties Input properties.
+     * @param {Object} properties.id Input ID.
      * @memberof Input
      */
     setId(properties = {
         id: 'validation-1'
     }){
-        this.properties.id = properties.id;
+        if (properties.hasOwnProperty('id')) {
+            this.properties.id = properties.id;
+        } else {
+            this.properties.id = 'validation-1';
+        }
+    }
+
+    /**
+     * * Returns the Input ID.
+     * @returns {String} The Input ID.
+     * @memberof Input
+     */
+    getId(){
+        return this.properties.id;
     }
 
     /**
@@ -53,9 +79,9 @@ export class Input{
      * @memberof Input
      */
     setType(){
-        switch(this.htmls[0].nodeName){
+        switch(this.getHTMLs()[0].nodeName){
             case 'INPUT':
-                this.properties.type = this.htmls[0].type;
+                this.properties.type = this.getHTMLs()[0].type;
                 break;
             case 'TEXTAREA':
                 this.properties.type = 'text';
@@ -67,22 +93,40 @@ export class Input{
     }
 
     /**
+     * * Returns the Input type.
+     * @returns {String} The Input type.
+     * @memberof Input
+     */
+    getType(){
+        return this.properties.type;
+    }
+
+    /**
      * * Set the Input name.
      * @memberof Input
      */
     setName(){
         let regexp = /\[/;
-        let name = this.htmls[0].name;
-        if(regexp.exec(this.htmls[0].name)){
-            name = this.htmls[0].name.split('[').shift();
+        let name = this.getHTMLs()[0].name;
+        if(regexp.exec(this.getHTMLs()[0].name)){
+            name = this.getHTMLs()[0].name.split('[').shift();
         }
         this.properties.name = name;
     }
 
     /**
+     * * Returns the Input name.
+     * @returns {String} The Input name.
+     * @memberof Input
+     */
+    getName(){
+        return this.properties.name;
+    }
+
+    /**
      * * Set the Input HTML Element.
-     * @param {HTMLElement} html - Input HTML Element.
-     * @param {Form} Form - Form.
+     * @param {HTMLElement} html Input HTML Element.
+     * @param {Form} Form Parent Form.
      * @memberof Input
      */
     setHTML(html = undefined, Form = undefined){
@@ -94,9 +138,18 @@ export class Input{
     }
 
     /**
+     * * Returns the Input HTML Elements.
+     * @returns {HTMLElement[]} The Input HTML Elements.
+     * @memberof Input
+     */
+    getHTMLs(){
+        return this.htmls;
+    }
+
+    /**
      * * Set the confirmation Input.
-     * @param {Form} Form - Form.
-     * @param {string} name - Input name.
+     * @param {Form} Form Parent Form.
+     * @param {String} name Input name.
      * @memberof Input
      */
     setConfirmationInput(Form = undefined, name = undefined){
@@ -109,35 +162,67 @@ export class Input{
     }
 
     /**
+     * * Returns the confirmation Input HTML Element.
+     * @returns {HTMLElement[]} The confirmation Input HTML Element.
+     * @memberof Input
+     */
+    getConfirmationInput(){
+        return this.confirmation;
+    }
+
+    /**
      * * Set the Input Support.
      * @memberof Input
      */
     setSupport(){
         let html;
-        if(html = document.querySelector(`#${this.properties.id} .support-${this.properties.name}`)){
+        if(html = document.querySelector(`#${this.getId()} .support-${this.getName()}`)){
             this.support = new Support(html);
         }
     }
 
     /**
+     * * Returns the Input Support.
+     * @returns {Support} The Input Support.
+     * @memberof Input
+     */
+    getSupport(){
+        return this.support;
+    }
+
+    /**
+     * * Check if there is an Input Support.
+     * @returns {Boolean} The "Is an Input Support?" boolean.
+     * @memberof Input
+     */
+    hasSupport(){
+        if (this.hasOwnProperty('support')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * * Set the Input event.
-     * @param {Form} Form - Form.
+     * @param {Form} Form Parent Form.
      * @memberof Input
      */
     setEvent(Form = undefined){
         let instance = this;
-        switch (this.properties.type) {
+        switch (this.getType()) {
             case 'file':
-                this.htmls[0].addEventListener('change', function(e){
+                this.getHTMLs()[0].addEventListener('change', function(e){
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
                 break;
             case 'radio':
                 // TODO
+                console.error('In the To Do List.');
                 break;
             case 'checkbox':
-                for (const html of this.htmls) {
+                for (const html of this.getHTMLs()) {
                     html.addEventListener('change', function(e){
                         e.preventDefault();
                         Validation.validate(Form, instance);
@@ -145,26 +230,26 @@ export class Input{
                 }
                 break;
             case null:
-                this.htmls[0].addEventListener('change', function(e){
+                this.getHTMLs()[0].addEventListener('change', function(e){
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
                 break;
             default:
-                if(this.htmls[0].nodeName == 'TEXTAREA'){
+                if(this.getHTMLs()[0].nodeName == 'TEXTAREA'){
                     if(this.checkCKEditor()){
-                        CKEDITOR.instances[this.htmls[0].name].on('change', function(){
-                            CKEDITOR.instances[instance.htmls[0].name].updateElement();
+                        CKEDITOR.instances[this.getHTMLs()[0].name].on('change', function(){
+                            CKEDITOR.instances[instance.getHTMLs()[0].name].updateElement();
                             Validation.validate(Form, instance);
                         });
                     }else{
-                        this.htmls[0].addEventListener('keyup', function(e){
+                        this.getHTMLs()[0].addEventListener('keyup', function(e){
                             e.preventDefault();
                             Validation.validate(Form, instance);
                         });
                     }
                 }else{
-                    this.htmls[0].addEventListener('keyup', function(e){
+                    this.getHTMLs()[0].addEventListener('keyup', function(e){
                         e.preventDefault();
                         Validation.validate(Form, instance);
                     });
@@ -174,9 +259,9 @@ export class Input{
     }
 
     /**
-     * * Set the Input confirmation event.
-     * @param {HTMLElement} input - Confirmation Input.
-     * @param {Form} Form - Form.
+     * * Set the confirmation Input event.
+     * @param {HTMLElement} input Confirmation Input.
+     * @param {Form} Form Parent Form.
      * @memberof Input
      */
     setConfirmationEvent(input = undefined, Form = undefined){
@@ -197,26 +282,39 @@ export class Input{
      * @memberof Input
      */
     checkCKEditor(){
-        if(this.htmls[0].classList.contains('ckeditor')){
+        if(this.getHTMLs()[0].classList.contains('ckeditor')){
             return true;
         }else{
             return false;
         }
     }
 
-    addInput(newInput){
-        this.htmls.push(newInput);
+    /**
+     * * Add a new Input HTML Element to the html array.
+     * @param {HTMLElement} newInput A new Input HTML Element.
+     * @memberof Input
+     */
+    addInput(newInput = undefined){
+        if (newInput) {
+            this.htmls.push(newInput);
+        } else {
+            console.error('There is not a new Input.');
+        }
+    }
+
+    isArray(){
+        console.warn('In the To Do List.');
     }
     
     /**
      * * Get all the Form <input> HTML Element.
      * @static
-     * @param {Form} Form - Form.
-     * @returns
+     * @param {Form} Form Parent Form.
+     * @returns {Input[]} All the Input HTML Elements.
      * @memberof Input
      */
-    static getHTMLElements(Form = undefined){
-        let auxHtml = document.querySelectorAll(`#${Form.properties.id} input.form-input, #${Form.properties.id} textarea.form-input, #${Form.properties.id} select.form-input`),
+    static getAll(Form = undefined){
+        let auxHtml = document.querySelectorAll(`#${Form.getId()} input.form-input, #${Form.getId()} textarea.form-input, #${Form.getId()} select.form-input`),
             htmls = [],
             names = [];
             let regexp = /\[/;
@@ -227,26 +325,26 @@ export class Input{
             }
             if(html.type != 'checkbox'){
                 if(names.indexOf(name) == -1){
-                    htmls.push(new this({id: Form.properties.id}, html, Form));
+                    htmls.push(new this({id: Form.getId()}, html, Form));
                     names.push(name);
                 }else{
                     htmls[names.indexOf(name)].addInput(html);
                 }
             }else{
                 if(!htmls.length){
-                    htmls.push(new this({id: Form.properties.id}, html, Form));
+                    htmls.push(new this({id: Form.getId()}, html, Form));
                 }else{
                     let push = true;
                     for (const htmlPushed of htmls) {
-                        if(htmlPushed.properties.type == 'checkbox'){
-                            if(htmlPushed.properties.name == name){
+                        if(htmlPushed.getType() == 'checkbox'){
+                            if(htmlPushed.getName() == name){
                                 push = false;
                                 htmlPushed.addInput(html);
                             }
                         }
                     }
                     if(push){
-                        htmls.push(new this({id: Form.properties.id}, html, Form));
+                        htmls.push(new this({id: Form.getId()}, html, Form));
                     }
                 }
             }
@@ -255,10 +353,11 @@ export class Input{
     }
 
     /**
-     * Find if the Input exist in an auxiliar array.
-     * @param {HTMLElement[]} inputs - The auxiliar array.
-     * @param {string} name - The input name.
-     * @param {string} className - The form parent class name.
+     * * Find if the Input exist in an auxiliar array.
+     * @param {HTMLElement[]} inputs The auxiliar array.
+     * @param {String} name Input name.
+     * @param {String} className Parent Form class name.
+     * @returns {Boolean} The "An Input exist in an auxiliar array?" boolean.
      */
     static exist(inputs, name, className){
         let found = false;

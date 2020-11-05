@@ -1,3 +1,4 @@
+// * ValidationJS repository.
 import { Requirement } from "./Requirement.js";
 
 /**
@@ -8,8 +9,9 @@ import { Requirement } from "./Requirement.js";
 export class Rule{
     /**
      * * Creates an instance of Rule.
-     * @param {object} properties - Rule properties.
-     * @param {string} requirements - Rule Requirements.
+     * @param {Object} properties Rule properties.
+     * @param {Object} properties.target Rule target.
+     * @param {String} requirements Rule Requirements.
      * @memberof Rule
      */
     constructor(properties = {
@@ -21,7 +23,8 @@ export class Rule{
 
     /**
      * * Set the Rule properties.
-     * @param {object} properties - Rule properties.
+     * @param {Object} properties Rule properties.
+     * @param {Object} properties.target Rule target.
      * @memberof Rule
      */
     setProperties(properties = {
@@ -32,19 +35,42 @@ export class Rule{
     }
 
     /**
+     * * Returns the Rule properties.
+     * @returns {Object} The Rule properties.
+     * @memberof Rule
+     */
+    getProperties(){
+        return this.properties;
+    }
+
+    /**
      * * Set the Rule target.
-     * @param {object} properties - Rule properties.
+     * @param {Object} properties Rule properties.
+     * @param {Object} properties.target Rule target.
      * @memberof Rule
      */
     setTarget(properties = {
         target: undefined
     }){
-        this.properties.target = properties.target;
+        if (properties.hasOwnProperty('target')) {
+            this.properties.target = properties.target;
+        } else {
+            this.properties.target = propundefined;
+        }
+    }
+
+    /**
+     * * Returns the Rule target.
+     * @returns {String} The Rule target.
+     * @memberof Rule
+     */
+    getTarget(){
+        return this.properties.target;
     }
 
     /**
      * * Set the Rule Requirements.
-     * @param {string} requirements - Rule Requirements.
+     * @param {String} requirements Rule Requirements.
      * @memberof Rule
      */
     setRequirements(requirements = undefined){
@@ -56,15 +82,24 @@ export class Rule{
     }
 
     /**
+     * * Returns the Rule Requirements.
+     * @returns {Requirement[]} The Rule Requirements.
+     * @memberof Rule
+     */
+    getRequirements(){
+        return this.requirements;
+    }
+
+    /**
      * * Get the Requirements from an Input.
-     * @param {Input} input - Input.
-     * @returns
+     * @param {Input} input Input.
+     * @returns {Requirement} A Requirement from an Input.
      * @memberof Rule
      */
     getRequirementsFromInput(input = undefined){
         let requirements = [];
-        for (const requirement of this.requirements) {
-            if(this.properties.target == input.properties.name){
+        for (const requirement of this.getRequirements()) {
+            if(this.getTarget() == input.getName()){
                 requirements.push(requirement);
             }
         }
@@ -74,8 +109,8 @@ export class Rule{
     /**
      * * Parse all the Rules.
      * @static
-     * @param {object} rules - Rules.
-     * @returns
+     * @param {Object} rules Rules.
+     * @returns {Rules[]} All the Rules from the Validation.
      * @memberof Rule
      */
     static getAll(rulesToFor = []){
@@ -94,46 +129,25 @@ export class Rule{
         return rules;
     }
 
-    /**
-     * Add an array to a Rule.
-     * @param {Rule[]} messages - The Rules created.
-     * @param {string} target - The Rule target.
-     * @param {string} requirements - The Rule requirements.
+    /** 
+     * * Attach an auxiliar Requirements array into a regular Requirements array.
+     * @param {Object} An auxiliar Requirements array.
+     * @return {Requirement[]}
      */
-    // static addArrayMode(rules, target, requirements){
-    //     target = target.split(".");
-    //     for(let i = 0; i < rules.length; i++){
-    //         if(rules[i].target == target[0]){
-    //             requirements = requirements.split("|");
-    //             if(!rules[i].array){
-    //                 rules[i].array = [];
+    // static attach(aux){
+    //     if(aux.array){
+    //         for(let requirement of aux.array){
+    //             let found = false;
+    //             for(let req of aux.requirements){
+    //                 if(req == requirement){
+    //                     found = true;
+    //                 }
     //             }
-    //             for(let j = 0; j < requirements.length; j++){
-    //                 rules[i].array.push(new Requirement(requirements[j]));
+    //             if(!found){
+    //                 aux.requirements.push(requirement);
     //             }
     //         }
     //     }
+    //     return aux.requirements;
     // }
-
-    /** 
-     * Attack the auxiliar Requirements array into the reguler Requirements array.
-     * @param {object} - An auxiliar array.
-     * @return {Requirement[]}
-     */
-    static attach(aux){
-        if(aux.array){
-            for(let requirement of aux.array){
-                let found = false;
-                for(let req of aux.requirements){
-                    if(req == requirement){
-                        found = true;
-                    }
-                }
-                if(!found){
-                    aux.requirements.push(requirement);
-                }
-            }
-        }
-        return aux.requirements;
-    }
 };

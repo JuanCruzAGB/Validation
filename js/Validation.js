@@ -1,3 +1,4 @@
+// * ValidationJS repository.
 import { Form } from "./Form.js";
 
 /**
@@ -8,8 +9,8 @@ import { Form } from "./Form.js";
 export class Validation{
     /**
      * * Creates an instance of Validation.
-     * @param {object} properties - Validation properties.
-     * @param {object} conditional - Validation conditional.
+     * @param {Object} properties Validation properties.
+     * @param {String} properties.id Validation ID.
      * @memberof Validation
      */
     constructor(properties = {
@@ -21,7 +22,8 @@ export class Validation{
 
     /**
      * * Set the Validation properties.
-     * @param {object} properties - Validation properties.
+     * @param {Object} properties Validation properties.
+     * @param {String} properties.id Validation ID.
      * @memberof Validation
      */
     setProperties(properties = {
@@ -32,36 +34,37 @@ export class Validation{
     }
 
     /**
+     * * Returns the Validation properties.
+     * @returns {Object} The Validation properties.
+     * @memberof Validation
+     */
+    getProperties(){
+        return this.properties;
+    }
+
+    /**
      * * Set the Validation ID.
-     * @param {object} properties - Validation properties.
+     * @param {Object} properties Validation properties.
+     * @param {String} properties.id Validation ID.
      * @memberof Validation
      */
     setId(properties = {
         id: 'validation-1'
     }){
-        this.properties.id = properties.id;
+        if (properties.hasOwnProperty('id')) {
+            this.properties.id = properties.id;
+        } else {
+            this.properties.id = 'validation-1';
+        }
     }
 
     /**
-     * * Set the Validation properties.
-     * @param {object} conditional - Validation conditional.
+     * * Returns the Validation ID.
+     * @returns {Object} The Validation ID.
      * @memberof Validation
      */
-    setConditional(conditional = {
-        target: undefined,
-        comparator: '=',
-        value: undefined
-    }){
-        this.conditional = {};
-        if(conditional.target){
-            this.conditional.target = conditional.target;
-        }
-        if(conditional.comparator){
-            this.conditional.comparator = conditional.comparator;
-        }
-        if(conditional.value){
-            this.conditional.value = conditional.value;
-        }
+    getId(){
+        return this.properties.id;
     }
 
     /**
@@ -70,29 +73,33 @@ export class Validation{
      */
     setForm(){
         this.form = new Form({
-            id: this.properties.id,
+            id: this.getId(),
         });
     }
 
     /**
-     * Update a Form.
-     * @param {string} className - The Form class name.
+     * * Returns the Validation Form.
+     * @returns {Form} The Validation Form.
+     * @memberof Validation
      */
-    update(className){
-        let forms = document.querySelectorAll('.form-validate');
-        for(let i = 0; i < forms.length; i++){
-            if(forms[i].classList.contains(className)){
-                forms[i].classList.add('form-validation-' + i);
-                this.forms[i] = new Form(forms[i], i);
-            }
-        }
+    getForm(){
+        return this.properties.id;
+    }
+
+    /**
+     * * Returns the Form valid state.
+     * @returns {Boolean} The Form valid state.
+     * @memberof Validation
+     */
+    getValid(){
+        return this.form.getValid();
     }
 
     /**
      * * Validate a Form or an Input.
      * @static
-     * @param {Form} form - Form to validate.
-     * @param {Input} input - Input to validate.
+     * @param {Form} form Form to validate.
+     * @param {Input} input Input to validate.
      * @memberof Validation
      */
     static validate(form = null, input = null){
@@ -111,34 +118,39 @@ export class Validation{
                 valid = false;
             }
         }
+        form.setValid({valid: valid});
         if(valid && input === null){
-            form.html.submit();
+            form.getHTML().submit();
         }
     }
 
     /**
      * * Validate a Form.
      * @static
-     * @param {Form} form - Form.
-     * @param {Rule} rule - Rule.
-     * @param {object} status - Validation status.
-     * @returns
+     * @param {Form} form Form to validate.
+     * @param {Rule} rule Rule to check.
+     * @param {Object} status Validation status.
+     * @param {Boolean} status.required Validation required status.
+     * @param {Boolean} status.valid Validation valid status.
+     * @param {Object} status.errors Validation error status.
+     * @returns {Object} The status.
      * @memberof Validation
      */
     static validateForm(form = null, rule = undefined, status = {
         required: true,
         valid: true,
+        errors: undefined,
     }){
-        for (const requirement of rule.requirements) {
+        for (const requirement of rule.getRequirements()) {
             if(status.valid && status.required){
-                status = requirement.execute(form.getInput(rule.properties.target), status);
+                status = requirement.execute(form.getInput(rule.getTarget()), status);
                 if(status.valid){
-                    Validation.valid(form.getInput(rule.properties.target));
+                    Validation.valid(form.getInput(rule.getTarget()));
                 }else{
-                    for(let message of form.messages){
+                    for(let message of form.getMessages()){
                         for(let error of status.errors){
-                            if(message.properties.target == error.target){
-                                Validation.invalid(form.getInput(message.properties.target), message.getOne(error));
+                            if(message.getTarget() == error.target){
+                                Validation.invalid(form.getInput(message.getTarget()), message.getOne(error));
                             }
                         }
                     }
@@ -151,16 +163,20 @@ export class Validation{
     /**
      * * Validate an Input.
      * @static
-     * @param {Form} form - Form.
-     * @param {Input} input - Input.
-     * @param {Rule} rule - Rule.
-     * @param {object} status - Validation status.
-     * @returns
+     * @param {Form} form Form to validate.
+     * @param {Input} input Input to validate.
+     * @param {Rule} rule Rule to check.
+     * @param {Object} status Validation status.
+     * @param {Boolean} status.required Validation required status.
+     * @param {Boolean} status.valid Validation valid status.
+     * @param {Object} status.errors Validation error status.
+     * @returns {Object} The status.
      * @memberof Validation
      */
     static validateInput(form = null, input = null, rule = undefined, status = {
         required: true,
         valid: true,
+        errors: undefined,
     }){
         let requirements = rule.getRequirementsFromInput(input);
         let messages = form.getMessagesFromInput(input);
@@ -172,7 +188,7 @@ export class Validation{
                 }else{
                     for(let message of messages){
                         for(let error of status.errors){
-                            if(message.properties.target == error.target){
+                            if(message.getTarget() == error.target){
                                 Validation.invalid(input, message.getOne(error));
                             }
                         }
@@ -185,30 +201,30 @@ export class Validation{
 
     /**
      * * Valid an Input.
-     * @param {Input} inputs - Input.
+     * @param {Input} inputs Input.
      */
     static valid(input = undefined){
-        for (const html of input.htmls) {
+        for (const html of input.getHTMLs()) {
             html.classList.remove('invalid');
             html.classList.add('valid');
         }
-        if(input.support){
-            input.support.removeError();
+        if(input.hasSupport()){
+            input.getSupport().removeError();
         }
     }
 
     /**
      * * Invelid an Input.
-     * @param {Input} inputs - Input.
-     * @param {string} message - The error message.
+     * @param {Input} inputs Input.
+     * @param {String} message The error message.
      */
     static invalid(input = undefined, message = ''){
-        for (const html of input.htmls) {
+        for (const html of input.getHTMLs()) {
             html.classList.remove('valid');
             html.classList.add('invalid');
         }
-        if(input.support){
-            input.support.addError(message);
+        if(input.hasSupport()){
+            input.getSupport().addError(message);
         }
     }
 };

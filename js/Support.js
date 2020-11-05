@@ -5,14 +5,8 @@
  */
 export class Support{
     /**
-     * Creates an instance of Support.
-     * @param {string} selector
-     * @param {Input} input
-     * @memberof Support
-     */
-    /**
      * * Creates an instance of Support.
-     * @param {HTMLElemet} html - Support HTML Element.
+     * @param {HTMLElemet} html Support HTML Element.
      * @memberof Support
      */
     constructor(html = undefined){
@@ -30,36 +24,63 @@ export class Support{
     }
 
     /**
+     * * Returns the Support properties.
+     * @returns {Object} The Support properties.
+     * @memberof Support
+     */
+    getProperties(){
+        return this.properties;
+    }
+
+    /**
      * * Set the Input type.
      * @memberof Input
      */
     setType(){
-        if(this.html.classList.contains('support-box')){
+        if (this.getHTML().classList.contains('support-box')) {
             this.properties.type = 'box';
-        }else{
-            this.type = 'tooltip';
+        } else {
+            this.properties.type = 'tooltip';
         }
     }
 
     /**
+     * * Returns the Support type.
+     * @returns {String} The Support type.
+     * @memberof Support
+     */
+    getType(){
+        return this.properties.type;
+    }
+
+    /**
      * * Set the Support HTML Element.
-     * @param {HTMLElement} html - Support HTML Element.
+     * @param {HTMLElement} html Support HTML Element.
      * @memberof Support
      */
     setHTML(html = undefined){
         this.html = html;
     }
+
+    /**
+     * * Returns the Support HTML Element.
+     * @returns {HTMLElement} The Support HTML Element.
+     * @memberof Support
+     */
+    getHTML(){
+        return this.html;
+    }
     
     /**
      * * Add the message to the Support.
-     * @param {string} message - Message to add.
+     * @param {string} message Message to add.
      * @memberof Support
      */
     addError(message = ''){
-        switch(this.properties.type){
+        switch(this.getType()){
             case 'box':
-                this.html.innerHTML = message;
-                this.html.classList.remove('hidden');
+                this.getHTML().innerHTML = message;
+                this.getHTML().classList.remove('hidden');
                 break;
         }
     }
@@ -69,10 +90,10 @@ export class Support{
      * @memberof Support
      */
     removeError(){
-        switch(this.properties.type){
+        switch(this.getType()){
             case 'box':
-                this.html.innerHTML = '';
-                this.html.classList.add('hidden');
+                this.getHTML().innerHTML = '';
+                this.getHTML().classList.add('hidden');
                 break;
         }
     }

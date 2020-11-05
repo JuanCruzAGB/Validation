@@ -1,18 +1,21 @@
 /**
- * Manage the Messages from the validation.
+ * * Manage the Messages from the validation.
  * @class Message
  */
 export class Message{
     /**
      * * Creates an instance of Message.
-     * @param {object} properties - Message properties.
-     * @param {object} requirements - Message Requirements.
+     * @param {Object} properties Message properties.
+     * @param {Object} properties.target Message target.
+     * @param {Object} requirements Message requirements properties.
+     * @param {String} requirements.name Message requirements name.
+     * @param {String} requirements.text Message requirements message.
      * @memberof Message
      */
     constructor(properties = {
         target: undefined,
     }, requirements = {
-        requirement: undefined,
+        name: undefined,
         text: undefined
     }){
         this.setProperties(properties);
@@ -21,7 +24,8 @@ export class Message{
 
     /**
      * * Set the Message properties.
-     * @param {object} properties - Message properties.
+     * @param {Object} properties Message properties.
+     * @param {Object} properties.target Message target.
      * @memberof Message
      */
     setProperties(properties = {
@@ -32,40 +36,77 @@ export class Message{
     }
 
     /**
+     * * Returns the Message properties.
+     * @returns {Object} The Message properties.
+     * @memberof Message
+     */
+    getProperties(){
+        return this.properties;
+    }
+
+    /**
      * * Set the Message target.
-     * @param {object} properties - Message properties.
+     * @param {Object} properties Message properties.
+     * @param {Object} properties.target Message target.
      * @memberof Message
      */
     setTarget(properties = {
         target: undefined,
     }){
-        this.properties.target = properties.target;
+        if (properties.hasOwnProperty('target')) {
+            this.properties.target = properties.target;
+        } else {
+            this.properties.target = undefined;
+        }
     }
 
     /**
-     * * Set the Message Requirements.
-     * @param {object} requirements - Message Requirements.
+     * * Returns the Message target.
+     * @returns {String} The Message target.
+     * @memberof Message
+     */
+    getTarget(){
+        return this.properties.target;
+    }
+
+    /**
+     * * Set the Message requirements.
+     * @param {Object} requirements Message requirements properties.
+     * @param {String} requirements.name Message requirements name.
+     * @param {String} requirements.text Message requirements message.
      * @memberof Message
      */
     setRequirements(requirements = {
-        requirement: undefined,
+        name: undefined,
         text: undefined
     }){
-        this.requirements = {
-            [requirements.requirement]: requirements.text,
-        };
+        this.requirements = {};
+        if (properties.hasOwnProperty('target')) {
+            this.requirements = {
+                [requirements.name]: requirements.text,
+            };
+        }
+    }
+
+    /**
+     * * Returns the Message requirements.
+     * @returns {Object} The Message requirements.
+     * @memberof Message
+     */
+    getRequirements(){
+        return this.Requirements;
     }
 
     /**
      * * Get one Message.
-     * @param {object} error - Error.
-     * @returns
+     * @param {Object} error Auxiliar Error array.
+     * @returns {String} Get the requirement Message. 
      * @memberof Message
      */
     getOne(error = undefined){
         let regexp = new RegExp(':');
-        if (this.requirements.hasOwnProperty(error.requirement.name)) {
-            const text = this.requirements[error.requirement.name];
+        if (this.getRequirements().hasOwnProperty(error.requirement.name)) {
+            const text = this.getRequirements()[error.requirement.name];
             if(regexp.exec(text)){
                 let param_regexp =  new RegExp(":" + error.requirement.name);
                 return text.replace(param_regexp, error.requirement.param);
@@ -76,22 +117,28 @@ export class Message{
     }
     
     /**
-     * * Push the requirement.
-     * @param {object} requirement - Requirement.
+     * * Push a requirement.
+     * @param {Object} requirement Message requirement.
+     * @param {String} requirement.name Message requirement name.
+     * @param {String} requirement.text Message requirement message.
      * @memberof Message
      */
     push(requirement = {
         name: undefined,
         text: undefined
     }){
-        this.requirements[requirement.name] = requirement.text;
+        if (requirement.hasOwnProperty('name') && requirement.hasOwnProperty('text')) {
+            this.requirements[requirements.name] = requirements.text;
+        } else {
+            console.error('There is not a new requirement Message.');
+        }
     }
     
     /**
      * * Parse all the Messages.
      * @static
-     * @param {object} messagesToFor - Messages.
-     * @returns
+     * @param {Object} messagesToFor Messages to parse.
+     * @returns {Message[]} All the Messages parsed.
      * @memberof Message
      */
     static getAll(messagesToFor = []){
@@ -109,7 +156,7 @@ export class Message{
                         messages.push(new this({
                             target: rule,
                         },{
-                            requirement: requirement,
+                            name: requirement,
                             text: message,
                         }));
                     }else{
@@ -125,32 +172,17 @@ export class Message{
     }
 
     /**
-     * Add an array to a Message.
-     * @param {Message[]} messages - The Messages created.
-     * @param {string} target - The Message target.
-     * @param {string} text - The Message text.
-     */
-    static addArrayMode(messages, target, text){
-        target = target.split(".*.");
-        for(let message of messages){
-            if(message.target == target[0]){
-                message.texts[target[1]] = text;
-            }
-        }
-    }
-
-    /**
      * * Check if a target isset in an array of Messages.
      * @static
-     * @param {object} messages- Messages.
-     * @param {string} target- Message target.
-     * @param {object} requirements - Message Requirements.
+     * @param {Message[]} messages Array of Messages.
+     * @param {String} target Message target.
+     * @returns {Boolean} The "A target isset in an array of Messages" boolean.
      * @memberof Message
      */
     static checkExist(messages = [], target = undefined){
         if(messages.length){
             for (const message of messages) {
-                if(message.properties.target == target){
+                if(message.getTarget() == target){
                     return message;
                 }
             }
