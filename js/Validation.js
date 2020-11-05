@@ -11,26 +11,33 @@ export class Validation{
      * * Creates an instance of Validation.
      * @param {Object} properties Validation properties.
      * @param {String} properties.id Validation ID.
+     * @param {Boolean} properties.submit Validation submit boolean.
+     * @param {Object} rules Validation rules.
+     * @param {Object} messages Validation messages.
      * @memberof Validation
      */
     constructor(properties = {
         id: 'validation-1',
-    }){
+        submit: true,
+    }, rules = [], messages = []){
         this.setProperties(properties);
-        this.setForm();
+        this.setForm(rules, messages);
     }
 
     /**
      * * Set the Validation properties.
      * @param {Object} properties Validation properties.
      * @param {String} properties.id Validation ID.
+     * @param {Boolean} properties.submit Validation submit boolean.
      * @memberof Validation
      */
     setProperties(properties = {
-        id: 'validation-1'
+        id: 'validation-1',
+        submit: true,
     }){
         this.properties = {};
         this.setId(properties);
+        this.setSubmit(properties);
     }
 
     /**
@@ -66,15 +73,43 @@ export class Validation{
     getId(){
         return this.properties.id;
     }
+    
+    /**
+     * * Set the Validation submit boolean.
+     * @param {Object} properties Validation properties.
+     * @param {Boolean} properties.submit Validation submit boolean.
+     * @memberof Validation
+     */
+    setSubmit(properties = {
+        submit: true,
+    }){
+        if (properties.hasOwnProperty('submit')) {
+            this.properties.submit = properties.submit;
+        } else {
+            this.properties.submit = true;
+        }
+    }
+
+    /**
+     * * Returns the Validation submit boolean.
+     * @returns {Object} The Validation submit boolean.
+     * @memberof Validation
+     */
+    getSubmit(){
+        return this.properties.submit;
+    }
 
     /**
      * * Set the Validation HTML Element.
+     * @param {object} rules - Validation Rules.
+     * @param {object} messages - Validation Messages.
      * @memberof Validation
      */
-    setForm(){
+    setForm(rules = [], messages = []){
         this.form = new Form({
             id: this.getId(),
-        });
+            submit: this.getSubmit(),
+        }, rules, messages);
     }
 
     /**
@@ -104,7 +139,7 @@ export class Validation{
      */
     static validate(form = null, input = null){
         let valid = true;
-        for(let rule of form.rules){
+        for(let rule of form.getRules()){
             let status = {
                 required: true,
                 valid: true,
@@ -119,7 +154,7 @@ export class Validation{
             }
         }
         form.setValid({valid: valid});
-        if(valid && input === null){
+        if(valid && input === null && form.getSubmit()){
             form.getHTML().submit();
         }
     }

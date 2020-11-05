@@ -561,7 +561,6 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @param {*} param Requirement param.
      * @returns {Object} The status.
      * @memberof Requirement
      */

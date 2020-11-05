@@ -14,32 +14,38 @@ export class Form{
      * * Creates an instance of Form.
      * @param {Object} properties Form properties.
      * @param {String} properties.id Form ID.
-     * @param {String} number The form number.
+     * @param {Boolean} properties.submit Form submit boolean.
+     * @param {Object} rules Form rules.
+     * @param {Object} messages Form messages.
      * @memberof Form
      */
     constructor(properties = {
-        id: 'validation-1'
-    }){
+        id: 'validation-1',
+        submit: true,
+    }, rules = [], messages = []){
         this.setProperties(properties);
         this.setStates();
         this.setHTML();
         this.setSubmitButton();
         this.setInputs();
-        this.setRules();
-        this.setMessages();
+        this.setRules(rules);
+        this.setMessages(messages);
     }
 
     /**
      * * Set the Form properties.
      * @param {Object} properties Form properties.
      * @param {String} properties.id Form ID.
+     * @param {Boolean} properties.submit Form submit boolean.
      * @memberof Form
      */
     setProperties(properties = {
-        id: 'validation-1'
+        id: 'validation-1',
+        submit: true,
     }){
         this.properties = {};
         this.setId(properties);
+        this.setSubmit(properties);
     }
 
     /**
@@ -93,6 +99,31 @@ export class Form{
     getId(){
         return this.properties.id;
     }
+    
+    /**
+     * * Set the Validation submit boolean.
+     * @param {Object} properties Validation properties.
+     * @param {Boolean} properties.submit Validation submit boolean.
+     * @memberof Validation
+     */
+    setSubmit(properties = {
+        submit: true,
+    }){
+        if (properties.hasOwnProperty('submit')) {
+            this.properties.submit = properties.submit;
+        } else {
+            this.properties.submit = true;
+        }
+    }
+
+    /**
+     * * Returns the Validation submit boolean.
+     * @returns {Object} The Validation submit boolean.
+     * @memberof Validation
+     */
+    getSubmit(){
+        return this.properties.submit;
+    }
 
     /**
      * * Set the Form valid state.
@@ -105,6 +136,20 @@ export class Form{
     }){
         if (states.hasOwnProperty('valid')) {
             this.states.valid = states.valid;
+            switch (this.states.valid) {
+                case true:
+                    if(this.getHTML().classList.contains('invalid')){
+                        this.getHTML().classList.remove('invalid');
+                    }
+                    this.getHTML().classList.add('valid');
+                    break;
+                case false:
+                    if(this.getHTML().classList.contains('valid')){
+                        this.getHTML().classList.remove('valid');
+                    }
+                    this.getHTML().classList.add('invalid');
+                    break;
+            }
         } else {
             this.states.valid = false;
         }
@@ -124,7 +169,12 @@ export class Form{
      * @memberof Form
      */
     setHTML(){
-        this.html = document.querySelector(`#${this.getId()}`);
+        let instance = this;
+        this.html = document.querySelector(`form#${this.getId()}`);
+        this.html.addEventListener('submit', function(e){
+            e.preventDefault();
+            Validation.validate(instance);
+        });
     }
 
     /**
@@ -142,7 +192,7 @@ export class Form{
      */
     setSubmitButton(){
         let instance = this;
-        this.btnSubmit = document.querySelector(`#${this.getId()} .form-submit`);
+        this.btnSubmit = document.querySelector(`.form-submit.${this.getId()}`);
         this.btnSubmit.addEventListener('click', function(e){
             e.preventDefault();
             Validation.validate(instance);
@@ -177,10 +227,11 @@ export class Form{
 
     /**
      * * Set the Form Rules.
+     * @param {Object} rules Form rules.
      * @memberof Form
      */
-    setRules(){
-        this.rules = Rule.getAll(JSON.parse((this.getHTML().dataset.rules)));
+    setRules(rules = []){
+        this.rules = Rule.getAll(rules);
     }
 
     /**
@@ -194,10 +245,11 @@ export class Form{
 
     /**
      * * Set the Form Messages.
+     * @param {Object} rules Form messages.
      * @memberof Form
      */
-    setMessages(){
-        this.messages = Message.getAll(JSON.parse((this.getHTML().dataset.messages)));
+    setMessages(messages = []){
+        this.messages = Message.getAll(messages);
     }
 
     /**

@@ -11,7 +11,7 @@ export class Input{
     /**
      * * Creates an instance of Input.
      * @param {Object} properties Input properties.
-     * @param {Object} properties.id Input ID.
+     * @param {String} properties.id Input ID.
      * @param {HTMLElement} html Input HTML Element.
      * @param {Form} Form Parent Form.
      * @memberof Input
@@ -28,7 +28,7 @@ export class Input{
     /**
      * * Set the Input properties.
      * @param {Object} properties Input properties.
-     * @param {Object} properties.id Input ID.
+     * @param {String} properties.id Input ID.
      * @memberof Input
      */
     setProperties(properties = {
@@ -52,7 +52,7 @@ export class Input{
     /**
      * * Set the Input ID.
      * @param {Object} properties Input properties.
-     * @param {Object} properties.id Input ID.
+     * @param {String} properties.id Input ID.
      * @memberof Input
      */
     setId(properties = {
@@ -106,9 +106,8 @@ export class Input{
      * @memberof Input
      */
     setName(){
-        let regexp = /\[/;
         let name = this.getHTMLs()[0].name;
-        if(regexp.exec(this.getHTMLs()[0].name)){
+        if( /\[/.exec(this.getHTMLs()[0].name)){
             name = this.getHTMLs()[0].name.split('[').shift();
         }
         this.properties.name = name;
@@ -156,7 +155,7 @@ export class Input{
         if(!this.confirmation){
             this.confirmation = [];
         }
-        let input = document.querySelector(`[name="${name}_confirmation"]`);
+        let input = document.querySelector(`form#${Form.getId()} .form-input[name="${name}_confirmation"]`);
         this.confirmation.push(input);
         this.setConfirmationEvent(input, Form);
     }
@@ -175,10 +174,7 @@ export class Input{
      * @memberof Input
      */
     setSupport(){
-        let html;
-        if(html = document.querySelector(`#${this.getId()} .support-${this.getName()}`)){
-            this.support = new Support(html);
-        }
+        this.support = Support.getHTML(this);
     }
 
     /**
@@ -220,6 +216,24 @@ export class Input{
             case 'radio':
                 // TODO
                 console.error('In the To Do List.');
+                break;
+            case 'hidden':
+                for (const btn of document.querySelectorAll(`.${this.getName()}-trigger`)) {
+                    btn.addEventListener('click', function(e){
+                        e.preventDefault();
+                        Validation.validate(Form, instance);
+                    });
+                }
+                break;
+            case 'date':
+                this.getHTMLs()[0].addEventListener('change', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                this.getHTMLs()[0].addEventListener('keyup', function(e){
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
                 break;
             case 'checkbox':
                 for (const html of this.getHTMLs()) {
@@ -302,6 +316,7 @@ export class Input{
         }
     }
 
+    // TODO
     isArray(){
         console.warn('In the To Do List.');
     }
@@ -314,13 +329,12 @@ export class Input{
      * @memberof Input
      */
     static getAll(Form = undefined){
-        let auxHtml = document.querySelectorAll(`#${Form.getId()} input.form-input, #${Form.getId()} textarea.form-input, #${Form.getId()} select.form-input`),
+        let auxHtml = document.querySelectorAll(`form#${Form.getId()} .form-input`),
             htmls = [],
             names = [];
-            let regexp = /\[/;
         for (const html of auxHtml) {
             let name = html.name;
-            if(regexp.exec(name)){
+            if(/\[/.exec(name)){
                 name = name.split('[').shift();
             }
             if(html.type != 'checkbox'){

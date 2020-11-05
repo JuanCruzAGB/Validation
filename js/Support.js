@@ -73,12 +73,12 @@ export class Support{
     
     /**
      * * Add the message to the Support.
-     * @param {string} message Message to add.
+     * @param {String} message Message to add.
      * @memberof Support
      */
     addError(message = ''){
-        switch(this.getType()){
-            case 'box':
+        switch(this.properties.type){
+            default:
                 this.getHTML().innerHTML = message;
                 this.getHTML().classList.remove('hidden');
                 break;
@@ -95,6 +95,20 @@ export class Support{
                 this.getHTML().innerHTML = '';
                 this.getHTML().classList.add('hidden');
                 break;
+        }
+    }
+
+    /**
+     * * Get the Support HTML Element.
+     * @static
+     * @param {Input} input Parent Input.
+     * @returns {Support} A new Suport.
+     * @memberof Support
+     */
+    static getHTML(input = undefined){
+        let html;
+        if(html = document.querySelector(`form#${input.getId()} .support-${input.getName()}`)){
+            return new this(html);
         }
     }
 }
