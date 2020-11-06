@@ -94,7 +94,7 @@ export class Message{
      * @memberof Message
      */
     getRequirements(){
-        return this.Requirements;
+        return this.requirements;
     }
 
     /**
