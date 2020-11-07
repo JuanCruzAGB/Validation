@@ -230,7 +230,7 @@ export class Input{
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
-                this.getHTMLs()[0].addEventListener('keyup', function(e){
+                this.getHTMLs()[0].addEventListener('focusout', function(e){
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
@@ -257,13 +257,13 @@ export class Input{
                             Validation.validate(Form, instance);
                         });
                     }else{
-                        this.getHTMLs()[0].addEventListener('keyup', function(e){
+                        this.getHTMLs()[0].addEventListener('focusout', function(e){
                             e.preventDefault();
                             Validation.validate(Form, instance);
                         });
                     }
                 }else{
-                    this.getHTMLs()[0].addEventListener('keyup', function(e){
+                    this.getHTMLs()[0].addEventListener('focusout', function(e){
                         e.preventDefault();
                         Validation.validate(Form, instance);
                     });
@@ -282,7 +282,7 @@ export class Input{
         let instance = this;
         switch (input.type) {
             default:
-                input.addEventListener('keyup', function(e){
+                input.addEventListener('focusout', function(e){
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
