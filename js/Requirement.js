@@ -1,110 +1,224 @@
+// ? External repository
+import { FetchServiceProvider as Fetch } from "../../ProvidersJS/FetchServiceProvider.js";
+
 /**
  * * Requirement controls the Rule requirements.
  * @export
  * @class Requirement
+ * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
 export class Requirement{
     /**
      * * Creates an instance of Requirement.
-     * @param {Object} properties Requirement properties.
-     * @param {Object} properties.name Requirement name.
+     * @param {Object} [properties] Requirement properties:
+     * @param {String} [properties.id] Requirement ID.
+     * @param {Object} [properties.name] Requirement name.
+     * @param {Object} [properties.param] Requirement param.
+     * @param {Object} [states] Requirement states:
      * @memberof Requirement
      */
     constructor(properties = {
-        name: undefined,
-    }){
+        id: 'requirement-1',
+        name: 'required',
+        param: false,
+    }, states = {}){
         this.setProperties(properties);
+        this.setStates(states);
     }
 
     /**
      * * Set the Requirement properties.
-     * @param {Object} properties Requirement properties.
-     * @param {Object} properties.name Requirement name.
+     * @param {Object} [properties] Requirement properties:
+     * @param {String} [properties.id] Requirement ID.
+     * @param {String} [properties.name] Requirement name.
+     * @param {Object} [properties.param] Requirement param.
      * @memberof Requirement
      */
     setProperties(properties = {
-        name: undefined,
+        id: 'requirement-1',
+        name: 'required',
+        param: false,
     }){
         this.properties = {};
-        let regexp = new RegExp(':')
-        if(regexp.exec(properties.name)){
+        this.setIDProperty(properties);
+        if(/:/.exec(properties.name)){
             let aux = properties.name.split(':');
             properties.name = aux[0];
             properties.param = aux[1];
         }
-        this.setName(properties);
-        this.setParam(properties);
+        this.setNameProperty(properties);
+        this.setParamProperty(properties);
     }
 
     /**
-     * * Returns the Requirement properties.
-     * @returns {Object} The Requirement properties.
+     * * Returns the Requirement properties or an specific property.
+     * @param {String} [property] Property name.
+     * @returns {Object|*}
      * @memberof Requirement
      */
-    getProperties(){
-        return this.properties;
+    getProperties(property = ''){
+        if (property && property != '') {
+            return this.properties[property];
+        } else {
+            return this.properties;
+        }
+    }
+
+    /**
+     * * Check if there is a property.
+     * @param {String} property Property name.
+     * @returns {Boolean}
+     * @memberof Requirement
+     */
+    hasProperty(property = ''){
+        if (this.properties.hasOwnProperty(property)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * * Change a property value.
+     * @param {String} property Property name.
+     * @param {*} value Property value.
+     * @memberof Requirement
+     */
+    changeProperty(property = '', value = ''){
+        if (this.hasProperty(property)) {
+            this.properties[property] = value;
+        }
+        switch (property) {
+            default:
+                break;
+        }
+    }
+
+    /**
+     * * Set the Requirement ID.
+     * @param {Object} [properties] Requirement properties:
+     * @param {String} [properties.id] Requirement ID.
+     * @memberof Requirement
+     */
+    setIDProperty(properties = {
+        id: 'requirement-1',
+    }){
+        if (properties.hasOwnProperty('id')) {
+            this.properties.id = properties.id;
+        } else {
+            this.properties.id = 'requirement-1';
+        }
+    }
+
+    /**
+     * * Returns the Requirement ID.
+     * @returns {String}
+     * @memberof Requirement
+     */
+    getIDProperty(){
+        return this.properties.id;
     }
 
     /**
      * * Set the Requirement name.
-     * @param {Object} properties Requirement properties.
-     * @param {Object} properties.name Requirement name.
+     * @param {Object} [properties] Requirement properties:
+     * @param {String} [properties.name] Requirement name.
      * @memberof Requirement
      */
-    setName(properties = {
-        name: undefined
+    setNameProperty(properties = {
+        name: 'required',
     }){
         if (properties.hasOwnProperty('name')) {
             this.properties.name = properties.name;
         } else {
-            this.properties.name = undefined;
+            this.properties.name = 'required';
         }
     }
 
     /**
      * * Returns the Requirement name.
-     * @returns {String} The Requirement name.
+     * @returns {String}
      * @memberof Requirement
      */
-    getName(){
+    getNameProperty(){
         return this.properties.name;
     }
 
     /**
      * * Set the Requirement param.
-     * @param {Object} properties Requirement properties.
-     * @param {Object} properties.param Requirement param.
+     * @param {Object} [properties] Requirement properties:
+     * @param {Object} [properties.param] Requirement param.
      * @memberof Requirement
      */
-    setParam(properties = {
-        param: undefined
+    setParamProperty(properties = {
+        param: false,
     }){
         if (properties.hasOwnProperty('param')) {
             this.properties.param = properties.param;
         } else {
-            this.properties.param = undefined;
+            this.properties.param = false;
         }
     }
 
     /**
      * * Returns the Requirement param.
-     * @returns {String} The Requirement param.
+     * @returns {String}
      * @memberof Requirement
      */
-    getParam(){
+    getParamProperty(){
         return this.properties.param;
     }
 
     /**
-     * * Check if there is a Requirement param.
-     * @returns {Boolean} The "If there is a Requirement param" boolean.
+     * * Set the Requirement states.
+     * @param {Object} [states] Requirement states:
      * @memberof Requirement
      */
-    hasParam(){
-        if (this.properties.hasOwnProperty('param') && this.properties.param) {
+    setStates(states = {}){
+        this.states = {};
+    }
+
+    /**
+     * * Returns the Link states or an specific states.
+     * @param {String} [property] States name.
+     * @returns {Object|*}
+     * @memberof Requirement
+     */
+    getStates(property = ''){
+        if (property && property != '') {
+            return this.states[property];
+        } else {
+            return this.states;
+        }
+    }
+
+    /**
+     * * Check if there is a status.
+     * @param {String} name Status name.
+     * @returns {Boolean}
+     * @memberof Requirement
+     */
+    hasStates(name = ''){
+        if (this.states.hasOwnProperty(name)) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * * Change a status value.
+     * @param {String} status Status name.
+     * @param {*} value Status value.
+     * @memberof Requirement
+     */
+    changeStatus(status = '', value = ''){
+        if (this.hasStates(status)) {
+            this.states[status] = value;
+        }
+        switch (status) {
+            default:
+                break;
         }
     }
 
@@ -115,7 +229,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     execute(input = undefined, status = {
@@ -123,10 +237,10 @@ export class Requirement{
         valid: true,
         errors: undefined,
     }){
-        if(this.hasParam()){
-            status = Requirement[this.getName()](input, status, this.getParam());
+        if(this.hasProperty('param')){
+            status = Requirement[this.getProperties('name')](input, status, this.getProperties('param'));
         }else{
-            status = Requirement[this.getName()](input, status);
+            status = Requirement[this.getProperties('name')](input, status);
         }
         return status;
     }
@@ -139,7 +253,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static required(input = undefined, status = {
@@ -149,11 +263,11 @@ export class Requirement{
     }){
         let valid = false;
         for (const html of input.getHTMLs()) {
-            if(input.getType() == 'select'){
+            if(input.getProperties('type') == 'select'){
                 if(!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value){
                     valid = true;
                 }
-            }else if(input.getType() == 'checkbox'){
+            }else if(input.getProperties('type') == 'checkbox'){
                 if(html.checked){
                     valid = true;
                 }
@@ -181,7 +295,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static nullable(input = undefined, status = {
@@ -191,11 +305,11 @@ export class Requirement{
     }){
         let required = true;
         for (const html of input.getHTMLs()) {
-            if(input.getType() == 'select'){
+            if(input.getProperties('type') == 'select'){
                 if(html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value){
                     required = false;
                 }
-            }else if(input.getType() == 'checkbox'){
+            }else if(input.getProperties('type') == 'checkbox'){
                 if(!html.checked){
                     required = false;
                 }else{
@@ -220,7 +334,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static numeric(input = undefined, status = {
@@ -251,7 +365,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static string(input = undefined, status = {
@@ -282,7 +396,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static email(input = undefined, status = {
@@ -290,10 +404,9 @@ export class Requirement{
         valid: true,
         errors: undefined,
     }){
-        let regexp = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
         let valid = false;
         for (const html of input.getHTMLs()) {
-            if(regexp.exec(html.value)){
+            if(/(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/.exec(html.value)){
                 valid = true;
             }
         }
@@ -314,7 +427,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static date(input = undefined, status = {
@@ -345,7 +458,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static array(input = undefined, status = {
@@ -354,10 +467,8 @@ export class Requirement{
         errors: undefined,
     }){
         let valid = false;
-        for (const html of input.getHTMLs()) {
-            if(input.isArray()){
-                valid = true;
-            }
+        if(input.isArray()){
+            valid = true;
         }
         if(!valid){
             status = this.setError({
@@ -376,7 +487,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static url(input = undefined, status = {
@@ -385,9 +496,8 @@ export class Requirement{
         errors: undefined,
     }){
         let valid = false;
-        let regexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
         for (const html of input.getHTMLs()) {
-            if(regexp.exec(html.value)){
+            if(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.exec(html.value)){
                 valid = true;
             }
         }
@@ -409,8 +519,7 @@ export class Requirement{
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
      * @param {*} param Requirement param.
-     * @returns
-     * @returns {Object} The status. {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static min(input = undefined, status = {
@@ -443,7 +552,7 @@ export class Requirement{
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
      * @param {*} param Requirement param.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static max(input = undefined, status = {
@@ -476,7 +585,7 @@ export class Requirement{
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
      * @param {*} param Requirement param.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static mimetypes(input = undefined, status = {
@@ -512,6 +621,48 @@ export class Requirement{
     }
 
     /**
+     * * Check if an Input value match with a RegExp.
+     * @static
+     * @param {Input} input Input to valdiate.
+     * @param {Object} status Validation status.
+     * @param {Boolean} status.required Validation required status.
+     * @param {Boolean} status.valid Validation valid status.
+     * @param {Object} status.errors Validation error status.
+     * @param {*} param Requirement param.
+     * @returns {Object}
+     * @memberof Requirement
+     */
+    static regex(input = undefined, status = {
+        required: true,
+        valid: true,
+        errors: undefined,
+    }, param = undefined){
+        let valid = false;
+        if (param[0] == '/') {
+            param = param.replace(/^\//, '');
+            param = param.replace(/\/g$/, '');
+            param = param.replace(/\/i$/, '');
+            param = param.replace(/\/gi$/, '');
+            param = param.replace(/\/ig$/, '');
+            param = param.replace(/\/$/, '');
+        }
+        for (const html of input.getHTMLs()) {
+            let regex = new RegExp(param);
+            if (regex.exec(html.value)) {
+                valid = true;
+            }
+        }
+        if(!valid){
+            status = this.setError({
+                name: 'regex',
+                param: param,
+            }, input, status);
+        }
+        status.valid = valid;
+        return status;
+    }
+
+    /**
      * * Check if an Input value exist or not in a data base table.
      * @static
      * @param {Input} input Input to valdiate.
@@ -520,7 +671,7 @@ export class Requirement{
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
      * @param {*} param Requirement param.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static exists(input = undefined, status = {
@@ -541,7 +692,7 @@ export class Requirement{
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
      * @param {*} param Requirement param.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static unique(input = undefined, status = {
@@ -561,7 +712,7 @@ export class Requirement{
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static confirmed(input = undefined, status = {
@@ -571,7 +722,7 @@ export class Requirement{
     }){
         let valid = false;
         for (const html of input.getHTMLs()) {
-            let input_confirmation = document.querySelector(`[name=${input.getName()}_confirmation]`);
+            let input_confirmation = document.querySelector(`[name=${ input.getProperties('name') }_confirmation]`);
             if(html.value == input_confirmation.value){
                 valid = true;
             }
@@ -588,13 +739,13 @@ export class Requirement{
     /**
      * * Create the error.
      * @static
-     * @param {object} requirement - Requirement.
-     * @param {Input} input - Input to validate.
+     * @param {object} requirement Requirement.
+     * @param {Input} input Input to validate.
      * @param {Object} status Validation status.
      * @param {Boolean} status.required Validation required status.
      * @param {Boolean} status.valid Validation valid status.
      * @param {Object} status.errors Validation error status.
-     * @returns {Object} The status.
+     * @returns {Object}
      * @memberof Requirement
      */
     static setError(requirement = undefined, input = undefined, status = {
@@ -606,7 +757,7 @@ export class Requirement{
             status.errors = [];
         }
         status.errors.push({
-            target: input.getName(),
+            target: input.getProperties('name'),
             requirement: requirement,
         });
         return status;
