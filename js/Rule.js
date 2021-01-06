@@ -235,7 +235,10 @@ export class Rule{
      */
     static generate(rulesToFor = []){
         let rules = [], key = 0;
-        for (const target in rulesToFor) {
+        for (let target in rulesToFor) {
+            if (/\*\./.exec(target)) {
+                target = target.split('*').shift();
+            }
             if (rulesToFor.hasOwnProperty(target)) {
                 const requirements = rulesToFor[target];
                 rules.push(new this({

@@ -264,8 +264,14 @@ export class Message{
     static generate(messagesToFor = []){
         let messages = [], key = 0;
         for (const rule in messagesToFor) {
-            let target = rule.split('.')[0];
-            let requirement = rule.split('.')[1];
+            let target, requirement;
+            if (/\*\./.exec(rule)) {
+                target = rule.split('*.')[0];
+                requirement = rule.split('*.')[1];
+            } else {
+                target = rule.split('.')[0];
+                requirement = rule.split('.')[1];
+            }
             const message = messagesToFor[rule];
             let message_found = Message.checkExist(messages, target);
             if(!message_found){

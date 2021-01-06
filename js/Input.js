@@ -167,7 +167,7 @@ export class Input{
             this.properties.name = properties.name;
         } else {
             let name = this.getHTMLs()[0].name;
-            if( /\[/.exec(this.getHTMLs()[0].name)){
+            if (/\[/.exec(this.getHTMLs()[0].name)) {
                 name = this.getHTMLs()[0].name.split('[').shift();
             }
             this.properties.name = name;
@@ -453,14 +453,18 @@ export class Input{
             }
             if(html.type != 'checkbox'){
                 if(names.indexOf(name) == -1){
-                    htmls.push(new this({id: Form.getProperties('id')}, {}, html, Form));
+                    htmls.push(new this({
+                        id: `${ Form.getProperties('id') }-${ name }`,
+                    }, {}, html, Form));
                     names.push(name);
                 }else{
                     htmls[names.indexOf(name)].addInput(html);
                 }
             }else{
                 if(!htmls.length){
-                    htmls.push(new this({id: Form.getProperties('id')}, {}, html, Form));
+                    htmls.push(new this({
+                        id: `${ Form.getProperties('id') }-${ name }`,
+                    }, {}, html, Form));
                 }else{
                     let push = true;
                     for (const htmlPushed of htmls) {
@@ -472,7 +476,9 @@ export class Input{
                         }
                     }
                     if(push){
-                        htmls.push(new this({id: Form.getProperties('id')}, {}, html, Form));
+                        htmls.push(new this({
+                            id: `${ Form.getProperties('id') }-${ name }`,
+                        }, {}, html, Form));
                     }
                 }
             }
