@@ -244,7 +244,6 @@ export class Support{
      */
     static getDomHTML(input = undefined){
         let html;
-        console.log(`form#${ input.getProperties('id').split(`-${ input.getProperties('name') }`).shift() } .support-${ input.getProperties('name') }`);
         if(html = document.querySelector(`form#${ input.getProperties('id').split(`-${ input.getProperties('name') }`).shift() } .support-${ input.getProperties('name') }`)){
             return new this({
                 id: `${ input.getProperties('id') }-support`,

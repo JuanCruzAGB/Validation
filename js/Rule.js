@@ -227,7 +227,7 @@ export class Rule{
     }
 
     /**
-     * * Parse all the Rules.
+     * * Generate all the Rules.
      * @static
      * @param {Object} rules Rules.
      * @returns {Rules[]}
@@ -236,18 +236,30 @@ export class Rule{
     static generate(rulesToFor = []){
         let rules = [], key = 0;
         for (let target in rulesToFor) {
-            if (/\*\./.exec(target)) {
-                target = target.split('*').shift();
+            if (/\.\*/.exec(target)) {
+                target = target.split('.*').shift();
             }
             if (rulesToFor.hasOwnProperty(target)) {
                 const requirements = rulesToFor[target];
-                rules.push(new this({
-                    id: `rule-${ key }`,
-                    target: target
-                }, {}, requirements));
+                rules.push(new this(this.generateProperties(key, target), {}, requirements));
                 key++;
             }
         }
         return rules;
+    }
+
+    /**
+     * * Generate the Rule properties.
+     * @static
+     * @param {Number} key
+     * @param {String} target Rule target.
+     * @returns {Object}
+     * @memberof Rule
+     */
+    static generateProperties(key, target){
+        return {
+            id: `rule-${ key }`,
+            target: target,
+        };
     }
 };
