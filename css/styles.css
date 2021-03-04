@@ -1,83 +1,24 @@
-body{
+body {
     --invalid-color: rgba(217,83,79,0.9);
 }
 
-.support{
+.support {
     display: inline-block;
     margin-top: .25rem;
     padding: .25rem;
     border-radius: .25rem;
 }
 
-.support.hidden{
+.support.hidden {
     display: none;
 }
 
-.support-tooltip{
-    position: relative;
-}
-
-.support-tooltip:hover::before{
-    visibility: visible;
-    opacity: 1;
-}
-
-.support-tooltip::before{
-    content: attr(data-tooltip);
-    position: absolute;
-    font-family: calibri;
-    max-width: 70%;
-    background-color: #fff;
-    border-radius: 2px;
-    padding: 4px 25px 4px 10px;
-    top: 0;
-    transform: translateY(-50%);
-    right: 2px;
-    pointer-events: none;
-    color: var(--invalid-color);
-    font-size: 13px;
-    line-height: 1.4;
-    text-align: left;
-    transition: opacity 0.4s;
-}
-
-.support-tooltip.showed::before{
-    border: 1px solid var(--invalid-color);
-}
-
-.support-tooltip::after{
-    content: "!";
-    display: block;
-    position: absolute;
-    color: var(--invalid-color);
-    font-size: 1.5rem;
-    top: 0;
-    transform: translateY(-50%);
-    right: 8px;
-    visibility: hidden;
-    opacity: 0;
-}
-
-.support-tooltip.showed::after{
-    visibility: visible;
-    opacity: 1;
-}
-
-.support-box{
-    position: initial;
+.support-box {
     background: var(--invalid-color);
     color: #fff;
 }
 
-.support-box.showed{
-    position: initial;
-    display: block;
-}
-
 /* LG */
 @media(min-width: 1024px){
-    .support-tooltip::before{
-        visibility: hidden;
-        opacity: 0;
-    }
+    /**/
 }

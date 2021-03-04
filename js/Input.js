@@ -1,4 +1,4 @@
-// * ValidationJS repository.
+// ? ValidationJS repository.
 import { Support } from "./Support.js";
 import { Validation } from "./Validation.js";
 
@@ -6,126 +6,240 @@ import { Validation } from "./Validation.js";
  * * Input controls the <input> created.
  * @export
  * @class Input
+ * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
 export class Input{
     /**
      * * Creates an instance of Input.
-     * @param {Object} properties Input properties.
-     * @param {String} properties.id Input ID.
-     * @param {HTMLElement} html Input HTML Element.
-     * @param {Form} Form Parent Form.
+     * @param {Object} [properties] Input properties:
+     * @param {String} [properties.id] Input ID.
+     * @param {String} [properties.type] Input type.
+     * @param {String} [properties.name] Input name.
+     * @param {HTMLElement} [html] Input HTML Element.
+     * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
     constructor(properties = {
-        id: 'validation-1',
-    }, html = undefined, Form = undefined){
+        id: 'input-1',
+        type: 'text',
+        name: 'input',
+    }, states = {}, html = undefined, Form = undefined){
         this.setHTML(html, Form);
         this.setProperties(properties);
+        this.setStates(states);
         this.setSupport();
         this.setEvent(Form);
     }
 
     /**
      * * Set the Input properties.
-     * @param {Object} properties Input properties.
-     * @param {String} properties.id Input ID.
+     * @param {Object} [properties] Input properties:
+     * @param {String} [properties.id] Input ID.
+     * @param {String} [properties.type] Input type.
+     * @param {String} [properties.name] Input name.
      * @memberof Input
      */
     setProperties(properties = {
-        id: 'validation-1',
+        id: 'input-1',
+        type: 'text',
+        name: 'input',
     }){
         this.properties = {};
-        this.setId(properties);
-        this.setType();
-        this.setName();
+        this.setIDProperty(properties);
+        this.setTypeProperty(properties);
+        this.setNameProperty(properties);
     }
 
     /**
-     * * Returns the Input properties.
-     * @returns {Object} The Input properties.
+     * * Returns the Input properties or an specific property.
+     * @param {String} [property] Property name.
+     * @returns {Object|*}
      * @memberof Input
      */
-    getProperties(){
-        return this.properties;
+    getProperties(property = ''){
+        if (property && property != '') {
+            return this.properties[property];
+        } else {
+            return this.properties;
+        }
+    }
+
+    /**
+     * * Check if there is a property.
+     * @param {String} property Property name.
+     * @returns {Boolean}
+     * @memberof Input
+     */
+    hasProperty(property = ''){
+        if (this.properties.hasOwnProperty(property)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * * Change a property value.
+     * @param {String} property Property name.
+     * @param {*} value Property value.
+     * @memberof Input
+     */
+    changeProperty(property = '', value = ''){
+        if (this.hasProperty(property)) {
+            this.properties[property] = value;
+        }
+        switch (property) {
+            default:
+                break;
+        }
     }
 
     /**
      * * Set the Input ID.
-     * @param {Object} properties Input properties.
-     * @param {String} properties.id Input ID.
+     * @param {Object} [properties] Input properties:
+     * @param {String} [properties.id] Input ID.
      * @memberof Input
      */
-    setId(properties = {
-        id: 'validation-1'
+    setIDProperty(properties = {
+        id: 'input-1',
     }){
         if (properties.hasOwnProperty('id')) {
             this.properties.id = properties.id;
         } else {
-            this.properties.id = 'validation-1';
+            this.properties.id = 'input-1';
         }
     }
 
     /**
      * * Returns the Input ID.
-     * @returns {String} The Input ID.
+     * @returns {String}
      * @memberof Input
      */
-    getId(){
+    getIDProperty(){
         return this.properties.id;
     }
 
     /**
      * * Set the Input type.
+     * @param {Object} [properties] Input properties:
+     * @param {String} [properties.type] Input type.
      * @memberof Input
      */
-    setType(){
-        switch(this.getHTMLs()[0].nodeName){
-            case 'INPUT':
-                this.properties.type = this.getHTMLs()[0].type;
-                break;
-            case 'TEXTAREA':
-                this.properties.type = 'text';
-                break;
-            case 'SELECT':
-                this.properties.type = 'select';
-                break;
+    setTypeProperty(properties = {
+        type: 'text',
+    }){
+        if (properties.hasOwnProperty('type')) {
+            this.properties.type = properties.type;
+        } else {
+            switch(this.getHTMLs()[0].nodeName){
+                case 'INPUT':
+                    this.properties.type = this.getHTMLs()[0].type;
+                    break;
+                case 'TEXTAREA':
+                    this.properties.type = 'text';
+                    break;
+                case 'SELECT':
+                    this.properties.type = 'select';
+                    break;
+            }
         }
     }
 
     /**
      * * Returns the Input type.
-     * @returns {String} The Input type.
+     * @returns {String}
      * @memberof Input
      */
-    getType(){
+    getTypeProperty(){
         return this.properties.type;
     }
 
     /**
      * * Set the Input name.
+     * @param {Object} [properties] Input properties:
+     * @param {String} [properties.name] Input name.
      * @memberof Input
      */
-    setName(){
-        let name = this.getHTMLs()[0].name;
-        if( /\[/.exec(this.getHTMLs()[0].name)){
-            name = this.getHTMLs()[0].name.split('[').shift();
+    setNameProperty(properties = {
+        name: 'input',
+    }){
+        if (properties.hasOwnProperty('name')) {
+            this.properties.name = properties.name;
+        } else {
+            let name = this.getHTMLs()[0].name;
+            if (/\[/.exec(this.getHTMLs()[0].name)) {
+                name = this.getHTMLs()[0].name.split('[').shift();
+            }
+            this.properties.name = name;
         }
-        this.properties.name = name;
     }
 
     /**
      * * Returns the Input name.
-     * @returns {String} The Input name.
+     * @returns {String}
      * @memberof Input
      */
-    getName(){
+    getNameProperty(){
         return this.properties.name;
     }
 
     /**
+     * * Set the Input states.
+     * @param {Object} [states] Input states:
+     * @memberof Input
+     */
+    setStates(states = {}){
+        this.states = {};
+    }
+
+    /**
+     * * Returns the Link states or an specific states.
+     * @param {String} [property] States name.
+     * @returns {Object|*}
+     * @memberof Input
+     */
+    getStates(property = ''){
+        if (property && property != '') {
+            return this.states[property];
+        } else {
+            return this.states;
+        }
+    }
+
+    /**
+     * * Check if there is a status.
+     * @param {String} name Status name.
+     * @returns {Boolean}
+     * @memberof Input
+     */
+    hasStates(name = ''){
+        if (this.states.hasOwnProperty(name)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * * Change a status value.
+     * @param {String} status Status name.
+     * @param {*} value Status value.
+     * @memberof Input
+     */
+    changeStatus(status = '', value = ''){
+        if (this.hasStates(status)) {
+            this.states[status] = value;
+        }
+        switch (status) {
+            default:
+                break;
+        }
+    }
+
+    /**
      * * Set the Input HTML Element.
-     * @param {HTMLElement} html Input HTML Element.
-     * @param {Form} Form Parent Form.
+     * @param {HTMLElement} [html] Input HTML Element.
+     * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
     setHTML(html = undefined, Form = undefined){
@@ -138,7 +252,7 @@ export class Input{
 
     /**
      * * Returns the Input HTML Elements.
-     * @returns {HTMLElement[]} The Input HTML Elements.
+     * @returns {HTMLElement[]}
      * @memberof Input
      */
     getHTMLs(){
@@ -147,7 +261,7 @@ export class Input{
 
     /**
      * * Set the confirmation Input.
-     * @param {Form} Form Parent Form.
+     * @param {Form} [Form] Parent Form.
      * @param {String} name Input name.
      * @memberof Input
      */
@@ -155,14 +269,14 @@ export class Input{
         if(!this.confirmation){
             this.confirmation = [];
         }
-        let input = document.querySelector(`form#${Form.getId()} .form-input[name="${name}_confirmation"]`);
+        let input = document.querySelector(`form#${ Form.getProperties('id') } .form-input[name="${ name }_confirmation"]`);
         this.confirmation.push(input);
         this.setConfirmationEvent(input, Form);
     }
 
     /**
      * * Returns the confirmation Input HTML Element.
-     * @returns {HTMLElement[]} The confirmation Input HTML Element.
+     * @returns {HTMLElement[]}
      * @memberof Input
      */
     getConfirmationInput(){
@@ -174,12 +288,12 @@ export class Input{
      * @memberof Input
      */
     setSupport(){
-        this.support = Support.getHTML(this);
+        this.support = Support.getDomHTML(this);
     }
 
     /**
      * * Returns the Input Support.
-     * @returns {Support} The Input Support.
+     * @returns {Support}
      * @memberof Input
      */
     getSupport(){
@@ -188,7 +302,7 @@ export class Input{
 
     /**
      * * Check if there is an Input Support.
-     * @returns {Boolean} The "Is an Input Support?" boolean.
+     * @returns {Boolean}
      * @memberof Input
      */
     hasSupport(){
@@ -201,12 +315,12 @@ export class Input{
 
     /**
      * * Set the Input event.
-     * @param {Form} Form Parent Form.
+     * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
     setEvent(Form = undefined){
         let instance = this;
-        switch (this.getType()) {
+        switch (this.getProperties('type')) {
             case 'file':
                 this.getHTMLs()[0].addEventListener('change', function(e){
                     e.preventDefault();
@@ -215,10 +329,10 @@ export class Input{
                 break;
             case 'radio':
                 // TODO
-                console.error('In the To Do List.');
+                console.warn('In the To Do List.');
                 break;
             case 'hidden':
-                for (const btn of document.querySelectorAll(`.${this.getName()}-trigger`)) {
+                for (const btn of document.querySelectorAll(`.${ this.getProperties('name') }-trigger`)) {
                     btn.addEventListener('click', function(e){
                         e.preventDefault();
                         Validation.validate(Form, instance);
@@ -275,7 +389,7 @@ export class Input{
     /**
      * * Set the confirmation Input event.
      * @param {HTMLElement} input Confirmation Input.
-     * @param {Form} Form Parent Form.
+     * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
     setConfirmationEvent(input = undefined, Form = undefined){
@@ -292,7 +406,7 @@ export class Input{
 
     /**
      * * Check if the Input has a CKEditor.
-     * @returns
+     * @returns {Boolean}
      * @memberof Input
      */
     checkCKEditor(){
@@ -324,12 +438,12 @@ export class Input{
     /**
      * * Get all the Form <input> HTML Element.
      * @static
-     * @param {Form} Form Parent Form.
-     * @returns {Input[]} All the Input HTML Elements.
+     * @param {Form} [Form] Parent Form.
+     * @returns {Input[]}
      * @memberof Input
      */
-    static getAll(Form = undefined){
-        let auxHtml = document.querySelectorAll(`form#${Form.getId()} .form-input`),
+    static getAllDomHTML(Form = undefined){
+        let auxHtml = document.querySelectorAll(`form#${ Form.getProperties('id') } .form-input`),
             htmls = [],
             names = [];
         for (const html of auxHtml) {
@@ -339,26 +453,32 @@ export class Input{
             }
             if(html.type != 'checkbox'){
                 if(names.indexOf(name) == -1){
-                    htmls.push(new this({id: Form.getId()}, html, Form));
+                    htmls.push(new this({
+                        id: `${ Form.getProperties('id') }-${ name }`,
+                    }, {}, html, Form));
                     names.push(name);
                 }else{
                     htmls[names.indexOf(name)].addInput(html);
                 }
             }else{
                 if(!htmls.length){
-                    htmls.push(new this({id: Form.getId()}, html, Form));
+                    htmls.push(new this({
+                        id: `${ Form.getProperties('id') }-${ name }`,
+                    }, {}, html, Form));
                 }else{
                     let push = true;
                     for (const htmlPushed of htmls) {
-                        if(htmlPushed.getType() == 'checkbox'){
-                            if(htmlPushed.getName() == name){
+                        if(htmlPushed.getProperties('type') == 'checkbox'){
+                            if(htmlPushed.getProperties('name') == name){
                                 push = false;
                                 htmlPushed.addInput(html);
                             }
                         }
                     }
                     if(push){
-                        htmls.push(new this({id: Form.getId()}, html, Form));
+                        htmls.push(new this({
+                            id: `${ Form.getProperties('id') }-${ name }`,
+                        }, {}, html, Form));
                     }
                 }
             }
@@ -371,7 +491,7 @@ export class Input{
      * @param {HTMLElement[]} inputs The auxiliar array.
      * @param {String} name Input name.
      * @param {String} className Parent Form class name.
-     * @returns {Boolean} The "An Input exist in an auxiliar array?" boolean.
+     * @returns {Boolean}
      */
     static exist(inputs, name, className){
         let found = false;
