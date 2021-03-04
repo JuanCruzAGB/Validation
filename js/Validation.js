@@ -1,5 +1,6 @@
 // ? ValidationJS repository.
 import { Form } from "./Form.js";
+import Rule from "./Rule.js";
 
 /**
  * * Validation makes an excellent Front-end validation.
@@ -14,6 +15,7 @@ export class Validation{
      * @param {String} [properties.id] Validation ID.
      * @param {Object} [states] Validation states.
      * @param {Boolean} [states.submit] Validation submit boolean status.
+     * @param {Boolean} [states.ignore] Validation ignore rules status.
      * @param {Array} [rules] Validation rules.
      * @param {Array} [messages] Validation messages.
      * @memberof Validation
@@ -22,9 +24,11 @@ export class Validation{
         id: 'validation-1',
     }, states = {
         submit: true,
+        ignore: [],
     }, rules = [], messages = []){
         this.setProperties(properties);
         this.setStates(states);
+        Rule.ignore(rules, this.getStates('ignore'));
         this.setForm(rules, messages);
     }
 
@@ -114,13 +118,16 @@ export class Validation{
      * * Set the Validation states.
      * @param {Object} [states] Validation states:
      * @param {Boolean} [states.submit] Validation submit boolean status.
+     * @param {Boolean} [states.ignore] Validation ignore rules status.
      * @memberof Validation
      */
     setStates(states = {
         submit: true,
+        ignore: [],
     }){
         this.states = {};
         this.setSubmitStatus(states);
+        this.setIgnoreStatus(states);
     }
 
     /**
@@ -169,17 +176,17 @@ export class Validation{
     
     /**
      * * Set the Validation submit boolean status.
-     * @param {Object} [properties] Validation properties:
+     * @param {Object} [states] Validation states:
      * @param {Boolean} [states.submit] Validation submit boolean status.
      * @memberof Validation
      */
-    setSubmitStatus(properties = {
+    setSubmitStatus(states = {
         submit: true,
     }){
-        if (properties.hasOwnProperty('submit')) {
-            this.properties.submit = properties.submit;
+        if (states.hasOwnProperty('submit')) {
+            this.states.submit = states.submit;
         } else {
-            this.properties.submit = true;
+            this.states.submit = true;
         }
     }
 
@@ -189,7 +196,23 @@ export class Validation{
      * @memberof Validation
      */
     getSubmitStatus(){
-        return this.properties.submit;
+        return this.states.submit;
+    }
+    
+    /**
+     * * Set the Validation ignore rules status.
+     * @param {Object} [properties] Validation properties:
+     * @param {Boolean} [states.ignore] Validation ignore rules status.
+     * @memberof Validation
+     */
+    setIgnoreStatus(states = {
+        ignore: [],
+    }){
+        if (states.hasOwnProperty('ignore')) {
+            this.states.ignore = states.ignore;
+        } else {
+            this.states.ignore = [];
+        }
     }
 
     /**

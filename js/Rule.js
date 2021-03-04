@@ -262,4 +262,21 @@ export class Rule{
             target: target,
         };
     }
+
+    /**
+     * * Removes the ignored rules.
+     * @static
+     * @param {array} rules Original Rules.
+     * @param {array} ignore Ignored Rules.
+     * @memberof Rule
+     */
+    static ignore (rules, ignore) {
+        for (const rule of ignore) {
+            if (rules.hasOwnProperty(rule)) {
+                delete rules[rule];
+            }
+        }
+    }
 };
+
+export default Rule;
