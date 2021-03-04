@@ -237,7 +237,6 @@ export class Requirement{
         valid: true,
         errors: undefined,
     }){
-        console.log(this.getProperties());
         if(this.hasProperty('param')){
             status = Requirement[this.getProperties('name')](input, status, this.getProperties('param'));
         }else{
