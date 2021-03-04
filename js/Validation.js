@@ -288,7 +288,6 @@ export class Validation{
         valid: true,
         errors: undefined,
     }){
-        console.log(rule.getRequirements());
         for (const requirement of rule.getRequirements()) {
             if(status.valid && status.required){
                 status = requirement.execute(form.getInputs(rule.getProperties('target')), status);
