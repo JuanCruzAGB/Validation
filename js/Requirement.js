@@ -148,6 +148,7 @@ export class Requirement{
         errors: undefined,
     }){
         let valid = false;
+        console.log(input);
         for (const html of input.getHTMLs()) {
             if(input.getType() == 'select'){
                 if(!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value){
