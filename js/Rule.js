@@ -194,7 +194,9 @@ export class Rule{
      * @memberof Rule
      */
     setRequirements(requirements = undefined){
-        requirements = requirements.split("|");
+        if (typeof requirements == 'string') {
+            requirements = requirements.split("|");
+        }
         this.requirements = [];
         for (const requirement of requirements) {
             this.requirements.push(new Requirement({name: requirement}));
