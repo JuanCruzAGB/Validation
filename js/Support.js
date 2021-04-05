@@ -1,211 +1,55 @@
+// ? JuanCruzAGB repository
+import Class from "../../JuanCruzAGB/js/Class.js";
+
+/** @var {object} deafultProps Default properties. */
+const deafultProps = {
+    id: 'support-1',
+    type: 'box',
+};
+
+/** @var {object} deafultState Default state. */
+const deafultState = {
+    //
+};
+
 /**
  * * Support controls the support tooltip.
  * @export
  * @class Support
+ * @extends Class
  * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
-export class Support{
+export class Support extends Class {
     /**
      * * Creates an instance of Support.
-     * @param {Object} [properties] Support properties:
-     * @param {String} [properties.id] Support ID.
-     * @param {String} [properties.type] Support type.
-     * @param {Object} [states] Support states:
+     * @param {Object} [props] Support properties:
+     * @param {String} [props.id='support-1'] Support primary key.
+     * @param {String} [props.type='box'] Support type.
+     * @param {Object} [state] Support state:
      * @param {HTMLElemet} html Support HTML Element.
      * @memberof Support
      */
-    constructor(properties = {
+    constructor(props = {
         id: 'support-1',
         type: 'box',
-    }, states = {}, html = undefined){
+    }, state = {}, html){
+        super({ ...deafultProps, ...props }, { ...deafultState, ...state })
         this.setHTML(html);
-        this.setProperties(properties);
-        this.setStates(states);
+        this.checkTypeProperty();
     }
 
     /**
-     * * Set the Support properties.
-     * @param {Object} [properties] Support properties:
-     * @param {String} [properties.id] Support ID.
-     * @param {String} [properties.type] Support type.
+     * * Check the Support type property.
      * @memberof Support
      */
-    setProperties(properties = {
-        id: 'support-1',
-        type: 'box',
-    }){
-        this.properties = {};
-        this.setIDProperty(properties);
-        this.setTypeProperty(properties);
-    }
-
-    /**
-     * * Returns the Support properties or an specific property.
-     * @param {String} [property] Property name.
-     * @returns {Object|*}
-     * @memberof Support
-     */
-    getProperties(property = ''){
-        if (property && property != '') {
-            return this.properties[property];
-        } else {
-            return this.properties;
-        }
-    }
-
-    /**
-     * * Check if there is a property.
-     * @param {String} property Property name.
-     * @returns {Boolean}
-     * @memberof Support
-     */
-    hasProperty(property = ''){
-        if (this.properties.hasOwnProperty(property)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * * Change a property value.
-     * @param {String} property Property name.
-     * @param {*} value Property value.
-     * @memberof Support
-     */
-    changeProperty(property = '', value = ''){
-        if (this.hasProperty(property)) {
-            this.properties[property] = value;
-        }
-        switch (property) {
-            default:
-                break;
-        }
-    }
-
-    /**
-     * * Set the Support ID.
-     * @param {Object} [properties] Support properties:
-     * @param {String} [properties.id] Support ID.
-     * @memberof Support
-     */
-    setIDProperty(properties = {
-        id: 'support-1',
-    }){
-        if (properties.hasOwnProperty('id')) {
-            this.properties.id = properties.id;
-        } else {
-            this.properties.id = 'support-1';
-        }
-    }
-
-    /**
-     * * Returns the Support ID.
-     * @returns {String}
-     * @memberof Support
-     */
-    getIDProperty(){
-        return this.properties.id;
-    }
-
-    /**
-     * * Set the Support type.
-     * @param {Object} [properties] Support properties:
-     * @param {String} [properties.type] Support type.
-     * @memberof Support
-     */
-    setTypeProperty(properties = {
-        type: 'box',
-    }){
-        if (properties.hasOwnProperty('type')) {
-            this.properties.type = properties.type;
-        } else {
-            if (this.getHTML().classList.contains('support-box')) {
-                this.properties.type = 'box';
+    checkTypeProperty () {
+        if (!this.props.hasOwnProperty('type')) {
+            if (this.html.classList.contains('support-box')) {
+                this.setProps('type', 'box');
             } else {
-                this.properties.type = 'tooltip';
+                this.setProps('type', 'tooltip');
             }
         }
-    }
-
-    /**
-     * * Returns the Support type.
-     * @returns {String}
-     * @memberof Support
-     */
-    getTypeProperty(){
-        return this.properties.type;
-    }
-
-    /**
-     * * Set the Support states.
-     * @param {Object} [states] Support states:
-     * @memberof Support
-     */
-    setStates(states = {}){
-        this.states = {};
-    }
-
-    /**
-     * * Returns the Link states or an specific states.
-     * @param {String} [property] States name.
-     * @returns {Object|*}
-     * @memberof Support
-     */
-    getStates(property = ''){
-        if (property && property != '') {
-            return this.states[property];
-        } else {
-            return this.states;
-        }
-    }
-
-    /**
-     * * Check if there is a status.
-     * @param {String} name Status name.
-     * @returns {Boolean}
-     * @memberof Support
-     */
-    hasStates(name = ''){
-        if (this.states.hasOwnProperty(name)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * * Change a status value.
-     * @param {String} status Status name.
-     * @param {*} value Status value.
-     * @memberof Support
-     */
-    changeStatus(status = '', value = ''){
-        if (this.hasStates(status)) {
-            this.states[status] = value;
-        }
-        switch (status) {
-            default:
-                break;
-        }
-    }
-
-    /**
-     * * Set the Support HTML Element.
-     * @param {HTMLElement} html Support HTML Element.
-     * @memberof Support
-     */
-    setHTML(html = undefined){
-        this.html = html;
-    }
-
-    /**
-     * * Returns the Support HTML Element.
-     * @returns {HTMLElement}
-     * @memberof Support
-     */
-    getHTML(){
-        return this.html;
     }
     
     /**
@@ -213,11 +57,11 @@ export class Support{
      * @param {String} message Message to add.
      * @memberof Support
      */
-    addError(message = ''){
-        switch(this.getProperties('type')){
+    addError (message = '') {
+        switch (this.props.type) {
             default:
-                this.getHTML().innerHTML = message;
-                this.getHTML().classList.remove('hidden');
+                this.html.innerHTML = message;
+                this.html.classList.remove('hidden');
                 break;
         }
     }
@@ -226,11 +70,11 @@ export class Support{
      * * Remove the Support error.
      * @memberof Support
      */
-    removeError(){
-        switch(this.getProperties('type')){
+    removeError () {
+        switch (this.props.type) {
             default:
-                this.getHTML().innerHTML = '';
-                this.getHTML().classList.add('hidden');
+                this.html.innerHTML = '';
+                this.html.classList.add('hidden');
                 break;
         }
     }
@@ -242,12 +86,15 @@ export class Support{
      * @returns {Support}
      * @memberof Support
      */
-    static getDomHTML(input = undefined){
+    static getDomHTML (input) {
         let html;
-        if(html = document.querySelector(`form#${ input.getProperties('id').split(`-${ input.getProperties('name') }`).shift() } .support-${ input.getProperties('name') }`)){
+        if (html = document.querySelector(`form#${ input.props.id.split(`-${ input.props.name }`).shift() } .support-${ input.props.name }`)) {
             return new this({
-                id: `${ input.getProperties('id') }-support`,
+                id: `${ input.props.id }-support`,
             }, {}, html);
         }
     }
 }
+
+// ? Default export
+export default Support;

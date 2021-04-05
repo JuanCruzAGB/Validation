@@ -17,8 +17,3 @@ body {
     background: var(--invalid-color);
     color: #fff;
 }
-
-/* LG */
-@media(min-width: 1024px){
-    /**/
-}
