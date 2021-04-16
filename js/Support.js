@@ -7,8 +7,8 @@ const deafultProps = {
     type: 'box',
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     //
 };
 
@@ -33,7 +33,7 @@ export class Support extends Class {
         id: 'support-1',
         type: 'box',
     }, state = {}, html){
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state })
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state })
         this.setHTML(html);
         this.checkTypeProperty();
     }

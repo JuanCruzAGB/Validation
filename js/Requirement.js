@@ -8,8 +8,8 @@ const deafultProps = {
     param: false,
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     //
 };
 
@@ -40,7 +40,7 @@ export class Requirement extends Class {
             props.name = aux[0];
             props.param = aux[1];
         }
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state });
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
     }
 
     /**
@@ -59,9 +59,9 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         if (this.hasProp('param')) {
-            status = Requirement[this.propes.name](input, status, this.propes.param);
+            status = Requirement[this.props.name](input, status, this.props.param);
         } else {
-            status = Requirement[this.propes.name](input, status);
+            status = Requirement[this.props.name](input, status);
         }
         return status;
     }
@@ -84,11 +84,11 @@ export class Requirement extends Class {
     }) {
         let valid = false;
         for (const html of input.htmls) {
-            if (input.propes.type == 'select') {
+            if (input.props.type == 'select') {
                 if (!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value) {
                     valid = true;
                 }
-            } else if (input.propes.type == 'checkbox') {
+            } else if (input.props.type == 'checkbox') {
                 if (html.checked) {
                     valid = true;
                 }
@@ -126,11 +126,11 @@ export class Requirement extends Class {
     }) {
         let required = true;
         for (const html of input.htmls) {
-            if (input.propes.type == 'select') {
+            if (input.props.type == 'select') {
                 if (html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value) {
                     required = false;
                 }
-            } else if (input.propes.type == 'checkbox') {
+            } else if (input.props.type == 'checkbox') {
                 if (!html.checked) {
                     required = false;
                 } else {
@@ -545,7 +545,7 @@ export class Requirement extends Class {
     }) {
         let valid = false;
         for (const html of input.htmls) {
-            let input_confirmation = document.querySelector(`[name=${ input.propes.name }_confirmation]`);
+            let input_confirmation = document.querySelector(`[name=${ input.props.name }_confirmation]`);
             if (html.value == input_confirmation.value) {
                 valid = true;
             }
@@ -580,7 +580,7 @@ export class Requirement extends Class {
             status.errors = [];
         }
         status.errors.push({
-            target: input.propes.name,
+            target: input.props.name,
             requirement: requirement,
         });
         return status;

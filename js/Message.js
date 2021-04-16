@@ -7,13 +7,13 @@ const deafultProps = {
     target: undefined,
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     //
 };
 
-/** @var {object} deafultReqs Default requirements properties. */
-const deafultReqs = {
+/** @var {object} defaultReqs Default requirements properties. */
+const defaultReqs = {
     name: undefined,
     text: undefined
 };
@@ -43,7 +43,7 @@ export class Message extends Class {
         name: undefined,
         text: undefined
     }) {
-        super({ ...deafultProps, ...props }, { ...deafultState, state });
+        super({ ...deafultProps, ...props }, { ...defaultState, state });
         this.setReqs({ ...defaultReqs, ...requirements });
     }
 

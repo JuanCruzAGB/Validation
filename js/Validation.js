@@ -14,8 +14,8 @@ const deafultProps = {
     id: 'validation-1',
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     // ? submit: true,
     ignore: [],
 };
@@ -45,7 +45,7 @@ export class Validation extends Class {
         submit: true,
         ignore: [],
     }, rules = [], messages = []) {
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state });
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
         Rule.ignore(rules, this.state.ignore);
         this.setForm(rules, messages);
     }
@@ -111,7 +111,8 @@ export class Validation extends Class {
         errors: undefined,
     }) {
         for (const requirement of rule.requirements) {
-            if (status.valid && status.requirementuired) {
+            // console.log(status.valid && status.required);
+            if (status.valid && status.required) {
                 status = requirement.execute(form.getInputByName(rule.props.target), status);
                 if (status.valid) {
                     Validation.valid(form.getInputByName(rule.props.target));

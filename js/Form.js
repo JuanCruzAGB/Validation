@@ -12,8 +12,8 @@ const deafultProps = {
     id: 'validation-1',
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     // ? submit: true,
     ignore: [],
 };
@@ -43,7 +43,7 @@ export class Form extends Class {
         submit: true,
         valid: false,
     }, rules = [], messages = []) {
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state });
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
         let instance = this;
         this.setHTML(`form#${ this.props.id }`);
         this.html.addEventListener('submit', function(e){

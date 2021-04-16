@@ -10,8 +10,8 @@ const deafultProps = {
     target: undefined,
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     //
 };
 
@@ -35,7 +35,7 @@ export class Rule extends Class {
         id: 'rule-1',
         target: undefined,
     }, state = {}, requirements) {
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state });
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
         this.setRequirements(requirements);
     }
 
@@ -65,7 +65,7 @@ export class Rule extends Class {
     getRequirementsFromInput (input = undefined) {
         let requirements = [];
         for (const requirement of this.requirements) {
-            if(this.getProperties('target') == input.getProperties('name')){
+            if(this.props.target == input.props.name){
                 requirements.push(requirement);
             }
         }

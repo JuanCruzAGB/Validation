@@ -12,8 +12,8 @@ const deafultProps = {
     name: 'input',
 };
 
-/** @var {object} deafultState Default state. */
-const deafultState = {
+/** @var {object} defaultState Default state. */
+const defaultState = {
     //
 };
 
@@ -41,10 +41,8 @@ export class Input extends Class {
         type: 'text',
         name: 'input',
     }, state = {}, html = undefined, Form) {
-        super({ ...deafultProps, ...props }, { ...deafultState, ...state })
+        super({ ...deafultProps, ...props }, { ...defaultState, ...state })
         this.setHTMLs(html, Form);
-        this.checkTypeProperty();
-        this.checkNameProperty();
         this.setSupport();
         this.setEvent(Form);
     }
@@ -81,40 +79,6 @@ export class Input extends Class {
             e.preventDefault();
             Validation.validate(Form, instance);
         });
-    }
-
-    /**
-     * * Check the Input type property.
-     * @memberof Input
-     */
-    checkTypeProperty () {
-        if (!this.props.hasOwnProperty('type')) {
-            switch (this.htmls[0].nodeName) {
-                case 'INPUT':
-                    this.setProps('type', this.htmls[0].type);
-                    break;
-                case 'TEXTAREA':
-                    this.setProps('type', 'text');
-                    break;
-                case 'SELECT':
-                    this.setProps('type', 'select');
-                    break;
-            }
-        }
-    }
-
-    /**
-     * * Check the Input name property.
-     * @memberof Input
-     */
-    checkNameProperty () {
-        if (!this.props.hasOwnProperty('name')) {
-            let name = this.htmls[0].name;
-            if (/\[/.exec(this.htmls[0].name)) {
-                name = this.htmls[0].name.split('[').shift();
-            }
-            this.setProps('name', name);
-        }
     }
 
     /**
@@ -225,13 +189,27 @@ export class Input extends Class {
         let auxHtml = document.querySelectorAll(`form#${ Form.props.id } .form-input`), htmls = [], names = [];
         for (const html of auxHtml) {
             let name = html.name;
+            let type = '';
             if (/\[/.exec(name)) {
                 name = name.split('[').shift();
+            }
+            switch (html.nodeName) {
+                case 'INPUT':
+                    type = html.type;
+                    break;
+                case 'TEXTAREA':
+                    type = 'text';
+                    break;
+                case 'SELECT':
+                    type = 'select';
+                    break;
             }
             if (html.type != 'checkbox') {
                 if (names.indexOf(name) == -1) {
                     htmls.push(new this({
                         id: `${ Form.props.id }-${ name }`,
+                        name: name,
+                        type: type,
                     }, {}, html, Form));
                     names.push(name);
                 } else {
