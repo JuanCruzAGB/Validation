@@ -219,12 +219,14 @@ export class Input extends Class {
                 if (!htmls.length) {
                     htmls.push(new this({
                         id: `${ Form.props.id }-${ name }`,
+                        // name: name,
+                        // type: type,
                     }, {}, html, Form));
                 } else {
                     let push = true;
                     for (const htmlPushed of htmls) {
-                        if (htmlPushed.props.type == 'checkbox') {
-                            if (htmlPushed.props.name == name) {
+                        if (htmlPushed.props.type === 'checkbox') {
+                            if (htmlPushed.props.name === name) {
                                 push = false;
                                 htmlPushed.addInput(html);
                             }
@@ -233,6 +235,8 @@ export class Input extends Class {
                     if (push) {
                         htmls.push(new this({
                             id: `${ Form.props.id }-${ name }`,
+                            name: name,
+                            type: type,
                         }, {}, html, Form));
                     }
                 }
