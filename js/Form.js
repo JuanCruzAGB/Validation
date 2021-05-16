@@ -65,11 +65,13 @@ export class Form extends Class {
         if (!this.buttons) {
             this.buttons = {};
         }
-        this.buttons.submit = document.querySelector(`.form-submit.${ this.props.id }`);
-        this.buttons.submit.addEventListener('click', function(e){
-            e.preventDefault();
-            Validation.validate(instance);
-        });
+        this.buttons.submits = document.querySelectorAll(`.form-submit.${ this.props.id }`);
+        for (const btn of this.buttons.submits) {
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                Validation.validate(instance);
+            });
+        }
     }
 
     /**
