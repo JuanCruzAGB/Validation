@@ -16,7 +16,7 @@ const deafultProps = {
 
 /** @var {object} defaultState Default state. */
 const defaultState = {
-    // ? submit: true,
+    submit: true,
     ignore: [],
 };
 

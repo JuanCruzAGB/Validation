@@ -88,7 +88,7 @@ export class Support extends Class {
      */
     static getDomHTML (input) {
         let html;
-        if (html = document.querySelector(`form#${ input.props.id.split(`-${ input.props.name }`).shift() } .support-${ input.props.name }`)) {
+        if (html = document.querySelector(`.support-${ input.props.name }`)) {
             return new this({
                 id: `${ input.props.id }-support`,
             }, {}, html);
