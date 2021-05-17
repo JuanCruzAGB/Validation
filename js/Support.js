@@ -93,6 +93,7 @@ export class Support extends Class {
                 id: `${ input.props.id }-support`,
             }, {}, html);
         }
+        return false;
     }
 }
 

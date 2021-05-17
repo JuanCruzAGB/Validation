@@ -73,22 +73,22 @@ export class Validation extends Class {
      */
     static validate (form, input = null) {
         let valid = true;
-        for(let rule of form.rules){
+        for(let rule of form.rules) {
             let status = {
                 required: true,
                 valid: true,
             }
-            if(input === null){
+            if (input === null) {
                 status = Validation.validateForm(form, rule, status);
             }else{
                 status = Validation.validateInput(form, input, rule, status);
             }
-            if(!status.valid){
+            if (!status.valid) {
                 valid = false;
             }
         }
         form.changeValidaState(valid);
-        if(valid && input === null && form.state.submit){
+        if (valid && input === null && form.state.submit) {
             form.html.submit();
         }
     }
@@ -178,7 +178,7 @@ export class Validation extends Class {
             html.classList.remove('invalid');
             html.classList.add('valid');
         }
-        if (input.hasOwnProperty('support')) {
+        if (input.support) {
             input.support.removeError();
         }
     }
@@ -188,13 +188,16 @@ export class Validation extends Class {
      * @param {Input} inputs Input.
      * @param {string} message The error message.
      */
-    static invalid(input = undefined, message = ''){
+    static invalid(input = undefined, message = '') {
         for (const html of input.htmls) {
             html.classList.remove('valid');
             html.classList.add('invalid');
         }
-        if(input.hasOwnProperty('support')){
+        if (input.support) {
             input.support.addError(message);
+        }
+        if (!input.support) {
+            console.error(message);
         }
     }
 };
