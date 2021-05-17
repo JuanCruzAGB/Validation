@@ -108,30 +108,32 @@ export class Message extends Class {
     static generate (messagesToParse = []) {
         let messages = [], key = 0;
         for (const rule in messagesToParse) {
-            let target, requirement;
-            if (/\*\./.exec(rule)) {
-                target = rule.split('*.')[0];
-                requirement = rule.split('*.')[1];
-            } else {
-                target = rule.split('.')[0];
-                requirement = rule.split('.')[1];
-            }
-            const message = messagesToParse[rule];
-            let message_found = Message.checkExist(messages, target);
-            if (!message_found) {
-                messages.push(new this({
-                    id: `message-${ key }`,
-                    target: target,
-                }, {},{
-                    name: requirement,
-                    text: message,
-                }));
-                key++;
-            } else {
-                message_found.push({
-                    name: requirement,
-                    text: message,
-                });
+            if (Object.hasOwnProperty.call(messagesToParse, rule)) {
+                const message = messagesToParse[rule];
+                let target, requirement;
+                if (/\*\./.exec(rule)) {
+                    target = rule.split('*.')[0];
+                    requirement = rule.split('*.')[1];
+                } else {
+                    target = rule.split('.')[0];
+                    requirement = rule.split('.')[1];
+                }
+                let message_found = Message.checkExist(messages, target);
+                if (!message_found) {
+                    messages.push(new this({
+                        id: `message-${ key }`,
+                        target: target,
+                    }, {},{
+                        name: requirement,
+                        text: message,
+                    }));
+                    key++;
+                } else {
+                    message_found.push({
+                        name: requirement,
+                        text: message,
+                    });
+                }
             }
         }
         return messages;

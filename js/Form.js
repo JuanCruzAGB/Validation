@@ -10,6 +10,8 @@ import Validation from "./Validation.js";
 /** @var {object} deafultProps Default properties. */
 const deafultProps = {
     id: 'validation-1',
+    rules: [],
+    messages: [],
 };
 
 /** @var {object} defaultState Default state. */
@@ -17,6 +19,19 @@ const defaultState = {
     // ? submit: true,
     ignore: [],
 };
+
+/** @var {object} defaultCallbacks Default callbacks. */
+const defaultCallbacks = {
+    submit: {
+        function: function (params) { /* console.log(params) */ },
+        params: {}
+}, valid: {
+        function: function (params) { console.log(params) },
+        params: {}
+}, invalid: {
+        function: function (params) { console.log(params) },
+        params: {}
+}};
 
 /**
  * * Form controls the <form> created.
@@ -30,21 +45,46 @@ export class Form extends Class {
      * * Creates an instance of Form.
      * @param {object} [props] Form properties:
      * @param {string} [props.id='form-1'] Form primary key.
+     * @param {array} [props.rules] Form rules.
+     * @param {array} [props.messages] Form messages.
      * @param {object} [state] Form state:
      * @param {boolean} [state.submit=true] Submit the Form.
      * @param {boolean} [state.valid=true] Form valid state.
-     * @param {array} [rules] Form rules.
-     * @param {array} [messages] Form messages.
+     * @param {object} [callbacks] Form callbacks:
+     * @param {object} [callbacks.submit] Form submit callback:
+     * @param {function} [callbacks.submit.function] Form submit function callback.
+     * @param {object} [callbacks.submit.params] Form submit params.
+     * @param {object} [callbacks.valid] Form valid callback:
+     * @param {function} [callbacks.valid.function] Form valid function callback.
+     * @param {object} [callbacks.valid.params] Form valid params.
+     * @param {object} [callbacks.invalid] Form invalid callback:
+     * @param {function} [callbacks.invalid.function] Form invalid function callback.
+     * @param {object} [callbacks.invalid.params] Form invalid params.
      * @memberof Form
      */
     constructor (props = {
         id: 'form-1',
+        rules: [],
+        messages: [],
     }, state = {
         submit: true,
         valid: false,
-    }, rules = [], messages = []) {
+    }, callbacks = {
+        submit: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+    }, valid: {
+            function: function (params) { console.log(params) },
+            params: {}
+    }, invalid: {
+            function: function (params) { console.log(params) },
+            params: {}
+    }}) {
         super({ ...deafultProps, ...props }, { ...defaultState, ...state });
+        this.setCallbacks({ ...defaultCallbacks, ...callbacks });
         let instance = this;
+        this.parseRules();
+        this.parseMessages();
         this.setHTML(`form#${ this.props.id }`);
         this.html.addEventListener('submit', function(e){
             e.preventDefault();
@@ -52,8 +92,6 @@ export class Form extends Class {
         });
         this.setSubmitButton();
         this.setInputs();
-        this.setRules(rules);
-        this.setMessages(messages);
     }
 
     /**
@@ -97,24 +135,6 @@ export class Form extends Class {
     }
 
     /**
-     * * Set the Form Rules.
-     * @param {array} [rules] Form rules.
-     * @memberof Form
-     */
-    setRules (rules = []) {
-        this.rules = Rule.generate(rules);
-    }
-
-    /**
-     * * Set the Form Messages.
-     * @param {array} [messages] Form messages.
-     * @memberof Form
-     */
-    setMessages (messages = []) {
-        this.messages = Message.generate(messages);
-    }
-
-    /**
      * * Get the Messages from an Input.
      * @param {Input} input Input.
      * @returns {Message}
@@ -122,7 +142,7 @@ export class Form extends Class {
      */
     getMessagesFromInput (input) {
         let messages = [];
-        for (const message of this.messages) {
+        for (const message of this.props.messages) {
             if (message.props.target == input.props.name) {
                 messages.push(message);
             }
@@ -135,7 +155,7 @@ export class Form extends Class {
      * @param {boolean} value Status value.
      * @memberof Form
      */
-     changeValidaState (value = false) {
+    changeValidaState (value = false) {
         this.setState('valid', value);
         if (this.state.valid) {
             if (this.html.classList.contains('invalid')) {
@@ -147,6 +167,51 @@ export class Form extends Class {
                 this.html.classList.remove('valid');
             }
             this.html.classList.add('invalid');
+        }
+    }
+
+    /**
+     * * Adds a Form validation error.
+     * @param {string} target Error target.
+     * @param {string} message Error message.
+     * @memberof Form
+     */
+    addInvalidErrors (target = '', message = '') {
+        if (!this.erros) {
+            this.errors = {};
+        }
+        if (!this.errors[target]) {
+            this.errors[target] = [];
+        }
+        this.errors[target].push(message);
+    }
+
+    /**
+     * * Set the Form Rules.
+     * @memberof Form
+     */
+    parseRules () {
+        this.setProps('rules', Rule.generate(this.props.rules));
+    }
+
+    /**
+     * * Set the Form Messages.
+     * @memberof Form
+     */
+    parseMessages () {
+        this.setProps('messages', Message.generate(this.props.messages));
+    }
+
+    /**
+     * * Removes a Form validation error.
+     * @param {string} target Error target.
+     * @memberof Form
+     */
+    removeInvalidErrors (target = '') {
+        if (this.errors) {
+            if (this.errors.hasOwnProperty(target)) {
+                delete this.errors[target];
+            }
         }
     }
 };

@@ -12,6 +12,8 @@ import Support from "./Support.js";
 /** @var {object} deafultProps Default properties. */
 const deafultProps = {
     id: 'validation-1',
+    rules: [],
+    messages: [],
 };
 
 /** @var {object} defaultState Default state. */
@@ -19,6 +21,26 @@ const defaultState = {
     submit: true,
     ignore: [],
 };
+
+/** @var {object} defaultCallbacks Default callbacks. */
+const defaultCallbacks = {
+    submit: {
+        function: function (params) { /* console.log(params) */ },
+        params: {}
+}, valid: {
+        function: function (params) { /* console.log('Everything is ok :D') */ },
+        params: {}
+}, invalid: {
+        function: function (params) { for (const target in params.errors) {
+            if (Object.hasOwnProperty.call(params.errors, target)) {
+                const errors = params.errors[target];
+                for (const error of errors) {
+                    console.error(`${ target }: ${ error }`);
+                }
+            }
+        } },
+        params: {}
+}};
 
 /**
  * * Validation makes an excellent Front-end validation.
@@ -32,36 +54,102 @@ export class Validation extends Class {
      * * Creates an instance of Validation.
      * @param {object} [props] Validation properties:
      * @param {string} [props.id='validation-id'] Validation primary key.
+     * @param {array} [props.rules] Validation Rules.
+     * @param {array} [props.messages] Validation Messages.
      * @param {object} [state] Validation state:
      * @param {boolean} [state.submit=true] Submit the Form.
      * @param {array} [state.ignore] Ignore some rules.
-     * @param {array} [rules] Validation Rules.
-     * @param {array} [messages] Validation Messages.
+     * @param {object} [callbacks] Validation callbacks:
+     * @param {object} [callbacks.submit] Validation submit callback:
+     * @param {function} [callbacks.submit.function] Validation submit function callback.
+     * @param {object} [callbacks.submit.params] Validation submit params.
+     * @param {object} [callbacks.valid] Validation valid callback:
+     * @param {function} [callbacks.valid.function] Validation valid function callback.
+     * @param {object} [callbacks.valid.params] Validation valid params.
+     * @param {object} [callbacks.invalid] Validation invalid callback:
+     * @param {function} [callbacks.invalid.function] Validation invalid function callback.
+     * @param {object} [callbacks.invalid.params] Validation invalid params.
      * @memberof Validation
      */
     constructor (props = {
         id: 'validation-1',
+        rules: [],
+        messages: [],
     }, state = {
         submit: true,
         ignore: [],
-    }, rules = [], messages = []) {
+    }, callbacks = {
+        submit: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+    }, valid: {
+            function: function (params) { /* console.log('Everything is ok :D') */ },
+            params: {}
+    }, invalid: {
+            function: function (params) { for (const target in params.errors) {
+                if (Object.hasOwnProperty.call(params.errors, target)) {
+                    const errors = params.errors[target];
+                    for (const error of errors) {
+                        console.error(`${ target }: ${ error }`);
+                    }
+                }
+            } },
+            params: {}
+    }}) {
         super({ ...deafultProps, ...props }, { ...defaultState, ...state });
-        Rule.ignore(rules, this.state.ignore);
-        this.setForm(rules, messages);
+        this.setCallbacks({ ...defaultCallbacks, ...callbacks });
+        Rule.ignore(this.props.rules, this.state.ignore);
+        this.setForm();
     }
 
     /**
      * * Set the Validation HTML Element.
-     * @param {array} [rules] Validation Rules.
-     * @param {array} [messages] Validation Messages.
      * @memberof Validation
      */
-    setForm (rules = [], messages = []) {
-        this.form = new Form({
-            id: this.props.id,
-        }, {
+    setForm () {
+        this.form = new Form(this.props, {
             submit: this.state.submit,
-        }, rules, messages);
+        }, this.callbacks);
+    }
+
+    /**
+     * * Invelid an Input.
+     * @param {Form} form
+     * @param {Input} inputs
+     * @param {string} message The error message.
+     */
+    static invalid (form, input = undefined, message = '') {
+        form.addInvalidErrors(input.props.name, message);
+        for (const html of input.htmls) {
+            html.classList.remove('valid');
+            html.classList.add('invalid');
+        }
+        if (input.support) {
+            input.support.addError(message);
+        }
+        form.execute('invalid', {
+            ...form.callbacks.invalid.params,
+            errors: form.errors,
+        });
+    }
+
+    /**
+     * * Valid an Input.
+     * @param {Form} form
+     * @param {Input} inputs
+     */
+    static valid (form, input = undefined) {
+        form.removeInvalidErrors(input.props.name);
+        for (const html of input.htmls) {
+            html.classList.remove('invalid');
+            html.classList.add('valid');
+        }
+        if (input.support) {
+            input.support.removeError();
+        }
+        form.execute('valid',{
+            ...form.callbacks.valid.params,
+        });
     }
 
     /**
@@ -73,7 +161,7 @@ export class Validation extends Class {
      */
     static validate (form, input = null) {
         let valid = true;
-        for(let rule of form.rules) {
+        for(let rule of form.props.rules) {
             let status = {
                 required: true,
                 valid: true,
@@ -89,6 +177,9 @@ export class Validation extends Class {
         }
         form.changeValidaState(valid);
         if (valid && input === null && form.state.submit) {
+            form.execute('submit', {
+                ...form.callbacks.submit.params,
+            })
             form.html.submit();
         }
     }
@@ -111,16 +202,15 @@ export class Validation extends Class {
         errors: undefined,
     }) {
         for (const requirement of rule.requirements) {
-            // console.log(status.valid && status.required);
             if (status.valid && status.required) {
                 status = requirement.execute(form.getInputByName(rule.props.target), status);
                 if (status.valid) {
-                    Validation.valid(form.getInputByName(rule.props.target));
+                    Validation.valid(form, form.getInputByName(rule.props.target));
                 } else {
-                    for (let message of form.messages) {
+                    for (let message of form.props.messages) {
                         for (let error of status.errors) {
                             if (message.props.target == error.target) {
-                                Validation.invalid(form.getInputByName(message.props.target), message.getOne(error));
+                                Validation.invalid(form, form.getInputByName(message.props.target), message.getOne(error));
                             }
                         }
                     }
@@ -154,12 +244,12 @@ export class Validation extends Class {
             if (status.valid && status.required) {
                 status = requirement.execute(input, status);
                 if (status.valid) {
-                    Validation.valid(input);
+                    Validation.valid(form, input);
                 } else {
                     for (let message of messages) {
                         for (let error of status.errors) {
                             if (message.props.target == error.target) {
-                                Validation.invalid(input, message.getOne(error));
+                                Validation.invalid(form, input, message.getOne(error));
                             }
                         }
                     }
@@ -167,38 +257,6 @@ export class Validation extends Class {
             }
         }
         return status;
-    }
-
-    /**
-     * * Valid an Input.
-     * @param {Input} inputs Input.
-     */
-    static valid (input = undefined) {
-        for (const html of input.htmls) {
-            html.classList.remove('invalid');
-            html.classList.add('valid');
-        }
-        if (input.support) {
-            input.support.removeError();
-        }
-    }
-
-    /**
-     * * Invelid an Input.
-     * @param {Input} inputs Input.
-     * @param {string} message The error message.
-     */
-    static invalid(input = undefined, message = '') {
-        for (const html of input.htmls) {
-            html.classList.remove('valid');
-            html.classList.add('invalid');
-        }
-        if (input.support) {
-            input.support.addError(message);
-        }
-        if (!input.support) {
-            console.error(message);
-        }
     }
 };
 

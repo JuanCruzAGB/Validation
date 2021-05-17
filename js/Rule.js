@@ -81,12 +81,12 @@ export class Rule extends Class {
      */
     static generate (rulesToFor = []) {
         let rules = [], key = 0;
-        for (let target in rulesToFor) {
-            if (/\.\*/.exec(target)) {
-                target = target.split('.*').shift();
-            }
-            if (rulesToFor.hasOwnProperty(target)) {
+        for (const target in rulesToFor) {
+            if (Object.hasOwnProperty.call(rulesToFor, target)) {
                 const requirements = rulesToFor[target];
+                if (/\.\*/.exec(target)) {
+                    target = target.split('.*').shift();
+                }
                 rules.push(new this(this.generateProperties(key, target), {}, requirements));
                 key++;
             }
