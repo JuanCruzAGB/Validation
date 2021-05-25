@@ -12,11 +12,6 @@ const deafultProps = {
     name: 'input',
 };
 
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    //
-};
-
 /**
  * * Input controls the <input> created.
  * @export
@@ -31,7 +26,6 @@ export class Input extends Class {
      * @param {string} [props.id='input-1'] Input primary key.
      * @param {string} [props.type='text'] Input type.
      * @param {string} [props.name='input'] Input name.
-     * @param {object} [state] Input state:
      * @param {HTMLElement} [html] Input HTML Element.
      * @param {Form} [Form] Parent Form.
      * @memberof Input
@@ -40,11 +34,10 @@ export class Input extends Class {
         id: 'input-1',
         type: 'text',
         name: 'input',
-    }, state = {}, html = undefined, Form) {
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state })
+    }, html = undefined, Form) {
+        super({ ...deafultProps, ...props });
         this.setHTMLs(html, Form);
         this.setSupport();
-        this.setEvent(Form);
     }
 
     /**
@@ -57,9 +50,12 @@ export class Input extends Class {
         if (!this.htmls) {
             this.htmls = [];
         }
-        this.htmls.push(html);
-        if (html.classList.contains('confirmation')) {
-            this.setConfirmationInput(Form, html.name);
+        if (html) {
+            this.htmls.push(html);
+            if (html.classList.contains('confirmation')) {
+                this.setConfirmationInput(Form, html.name);
+            }
+            this.setEvent(html, Form);
         }
     }
 
@@ -91,19 +87,18 @@ export class Input extends Class {
 
     /**
      * * Set the Input event.
+     * @param {HTMLElement} html Input HTML Element.
      * @param {Form} Form Parent Form.
      * @memberof Input
      */
-    setEvent (Form) {
+    setEvent (html, Form) {
         let instance = this;
         switch (this.props.type) {
             case 'file':
-                for (const html of this.htmls) {
-                    html.addEventListener('change', function (e) {
-                        e.preventDefault();
-                        Validation.validate(Form, instance);
-                    });
-                }
+                html.addEventListener('change', function (e) {
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
                 break;
             case 'radio':
                 // TODO
@@ -118,64 +113,50 @@ export class Input extends Class {
                 }
                 break;
             case 'date':
-                for (const html of this.htmls) {
-                    html.addEventListener('change', function (e) {
-                        e.preventDefault();
-                        Validation.validate(Form, instance);
-                    });
-                    html.addEventListener('focusout', function (e) {
-                        e.preventDefault();
-                        Validation.validate(Form, instance);
-                    });
-                }
-                break;
-            case 'checkbox':
-                for (const html of this.htmls) {
-                    html.addEventListener('change', function (e) {
-                        e.preventDefault();
-                        Validation.validate(Form, instance);
-                    });
-                }
-                break;
-            case null:
-                this.htmls[0].addEventListener('change', function (e) {
+                html.addEventListener('change', function (e) {
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                html.addEventListener('focusout', function (e) {
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
                 break;
+            case 'checkbox':
+                html.addEventListener('change', function (e) {
+                    e.preventDefault();
+                    Validation.validate(Form, instance);
+                });
+                break;
+            case null:
+                // this.htmls[0].addEventListener('change', function (e) {
+                //     e.preventDefault();
+                //     Validation.validate(Form, instance);
+                // });
+                console.warn("Input type = null");
+                break;
             default:
-                for (const html of this.htmls) {
-                    if (html.nodeName == 'TEXTAREA') {
-                        if (html.classList.contains('ckeditor')) {
-                            let input = html;
-                            CKEDITOR.instances[html.name].on('change', function (e) {
-                                CKEDITOR.instances[input.name].updateElement();
-                                Validation.validate(Form, instance);
-                            });
-                        } else {
-                            html.addEventListener('focusout', function (e) {
-                                e.preventDefault();
-                                Validation.validate(Form, instance);
-                            });
-                        }
+                if (html.nodeName == 'TEXTAREA') {
+                    if (html.classList.contains('ckeditor')) {
+                        let input = html;
+                        CKEDITOR.instances[html.name].on('change', function (e) {
+                            CKEDITOR.instances[input.name].updateElement();
+                            Validation.validate(Form, instance);
+                        });
                     } else {
                         html.addEventListener('focusout', function (e) {
                             e.preventDefault();
                             Validation.validate(Form, instance);
                         });
                     }
+                } else {
+                    html.addEventListener('focusout', function (e) {
+                        e.preventDefault();
+                        Validation.validate(Form, instance);
+                    });
                 }
                 break;
         }
-    }
-
-    /**
-     * * Add a new Input HTML Element to the html array.
-     * @param {HTMLElement} newInput A new Input HTML Element.
-     * @memberof Input
-     */
-    addInput (newInput) {
-        this.htmls.push(newInput);
     }
     
     /**
@@ -186,63 +167,36 @@ export class Input extends Class {
      * @memberof Input
      */
     static getAllDomHTML (Form) {
-        let auxHtml = document.querySelectorAll(`form#${ Form.props.id } .form-input`), htmls = [], names = [];
-        for (const html of auxHtml) {
-            let name = html.name;
-            let type = '';
-            if (/\[/.exec(name)) {
-                name = name.split('[').shift();
-            }
-            switch (html.nodeName) {
-                case 'INPUT':
-                    type = html.type;
-                    break;
-                case 'TEXTAREA':
-                    type = 'text';
-                    break;
-                case 'SELECT':
-                    type = 'select';
-                    break;
-            }
-            if (html.type != 'checkbox') {
-                if (names.indexOf(name) == -1) {
-                    htmls.push(new this({
-                        id: `${ Form.props.id }-${ name }`,
-                        name: name,
-                        type: type,
-                    }, {}, html, Form));
-                    names.push(name);
-                } else {
-                    htmls[names.indexOf(name)].addInput(html);
+        let auxHtml = document.querySelectorAll(`form#${ Form.props.id } .form-input`), inputs = [], names = [], input;
+        for (const rule of Form.props.rules) {
+            input = new this({
+                id: `${ Form.props.id }-${ rule.props.target }`,
+                name: rule.props.target,
+            }, undefined, Form);
+            for (const html of auxHtml) {
+                let name = html.name;
+                if (/\[/.exec(name)) {
+                    name = name.split('[').shift();
                 }
-            } else {
-                if (!htmls.length) {
-                    htmls.push(new this({
-                        id: `${ Form.props.id }-${ name }`,
-                        // name: name,
-                        // type: type,
-                    }, {}, html, Form));
-                } else {
-                    let push = true;
-                    for (const htmlPushed of htmls) {
-                        if (htmlPushed.props.type === 'checkbox') {
-                            if (htmlPushed.props.name === name) {
-                                push = false;
-                                htmlPushed.addInput(html);
+                if (name === rule.props.target) {
+                    switch (html.nodeName) {
+                        case 'INPUT':
+                            if (input.props.type !== html.type) {
+                                input.setProps('type', html.type);
                             }
-                        }
+                            break;
+                        case 'SELECT':
+                            if (input.props.type !== 'select') {
+                                input.setProps('type', 'select');
+                            }
+                            break;
                     }
-                    if (push) {
-                        htmls.push(new this({
-                            id: `${ Form.props.id }-${ name }`,
-                            name: name,
-                            type: type,
-                        }, {}, html, Form));
-                    }
+                    input.setHTMLs(html, Form);
                 }
             }
+            inputs.push(input);
         }
-        return htmls;
+        return inputs;
     }
 };
 

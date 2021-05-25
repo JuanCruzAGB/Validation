@@ -28,14 +28,14 @@ const defaultCallbacks = {
         function: function (params) { /* console.log(params) */ },
         params: {}
 }, valid: {
-        function: function (params) { /* console.log('Everything is ok :D') */ },
+        function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
         params: {}
 }, invalid: {
         function: function (params) { for (const target in params.errors) {
             if (Object.hasOwnProperty.call(params.errors, target)) {
                 const errors = params.errors[target];
                 for (const error of errors) {
-                    console.error(`${ target }: ${ error }`);
+                    // console.error(`${ target }: ${ error }`);
                 }
             }
         } },
@@ -83,14 +83,14 @@ export class Validation extends Class {
             function: function (params) { /* console.log(params) */ },
             params: {}
     }, valid: {
-            function: function (params) { /* console.log('Everything is ok :D') */ },
+            function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
             params: {}
     }, invalid: {
             function: function (params) { for (const target in params.errors) {
                 if (Object.hasOwnProperty.call(params.errors, target)) {
                     const errors = params.errors[target];
                     for (const error of errors) {
-                        console.error(`${ target }: ${ error }`);
+                        // console.error(`${ target }: ${ error }`);
                     }
                 }
             } },
@@ -147,9 +147,6 @@ export class Validation extends Class {
         if (input.support) {
             input.support.removeError();
         }
-        form.execute('valid',{
-            ...form.callbacks.valid.params,
-        });
     }
 
     /**
@@ -161,6 +158,7 @@ export class Validation extends Class {
      */
     static validate (form, input = null) {
         let valid = true;
+        form.refreshInputs();
         for(let rule of form.props.rules) {
             let status = {
                 required: true,
@@ -176,11 +174,18 @@ export class Validation extends Class {
             }
         }
         form.changeValidaState(valid);
-        if (valid && input === null && form.state.submit) {
-            form.execute('submit', {
-                ...form.callbacks.submit.params,
-            })
-            form.html.submit();
+        if (valid) {
+            form.execute('valid',{
+                ...form.callbacks.valid.params,
+            });
+            if (input === null) {
+                form.execute('submit', {
+                    ...form.callbacks.submit.params,
+                });
+                if (form.state.submit) {
+                    form.html.submit();
+                }
+            }
         }
     }
 

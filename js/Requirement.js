@@ -83,18 +83,20 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (input.props.type == 'select') {
-                if (!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value) {
-                    valid = true;
-                }
-            } else if (input.props.type == 'checkbox') {
-                if (html.checked) {
-                    valid = true;
-                }
-            } else {
-                if (html.value) {
-                    valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (input.props.type == 'select') {
+                    if (!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value) {
+                        valid = true;
+                    }
+                } else if (input.props.type == 'checkbox') {
+                    if (html.checked) {
+                        valid = true;
+                    }
+                } else {
+                    if (html.value) {
+                        valid = true;
+                    }
                 }
             }
         }
@@ -125,20 +127,22 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let required = true;
-        for (const html of input.htmls) {
-            if (input.props.type == 'select') {
-                if (html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value) {
-                    required = false;
-                }
-            } else if (input.props.type == 'checkbox') {
-                if (!html.checked) {
-                    required = false;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (input.props.type == 'select') {
+                    if (html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value) {
+                        required = false;
+                    }
+                } else if (input.props.type == 'checkbox') {
+                    if (!html.checked) {
+                        required = false;
+                    } else {
+                        required = true;
+                    }
                 } else {
-                    required = true;
-                }
-            } else {
-                if (!html.value) {
-                    required = false;
+                    if (!html.value) {
+                        required = false;
+                    }
                 }
             }
         }
@@ -164,9 +168,11 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (!isNaN(html.value)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (!isNaN(html.value)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -195,9 +201,11 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (typeof html.value == 'string') {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (typeof html.value == 'string') {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -226,9 +234,11 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (/(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/.exec(html.value)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (/(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/.exec(html.value)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -257,9 +267,11 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (Date.parse(html.value)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (Date.parse(html.value)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -317,9 +329,11 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.exec(html.value)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.exec(html.value)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -349,9 +363,11 @@ export class Requirement extends Class {
         errors: undefined,
     }, param = undefined) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (html.value.length >= parseInt(param)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (html.value.length >= parseInt(param)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -382,9 +398,11 @@ export class Requirement extends Class {
         errors: undefined,
     }, param = undefined) {
         let valid = false;
-        for (const html of input.htmls) {
-            if (html.value.length <= parseInt(param)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (html.value.length <= parseInt(param)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -416,18 +434,20 @@ export class Requirement extends Class {
     }, param = undefined) {
         let valid = false;
         let params = param.split(',');
-        for (const html of input.htmls) {
-            if (html.files && html.files.length) {
-                let found = false;
-                for(let file of html.files) {
-                    for(let param of params) {
-                        if (file.type == param) {
-                            found = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (html.files && html.files.length) {
+                    let found = false;
+                    for(let file of html.files) {
+                        for(let param of params) {
+                            if (file.type == param) {
+                                found = true;
+                            }
                         }
                     }
-                }
-                if (found) {
-                    valid = true;
+                    if (found) {
+                        valid = true;
+                    }
                 }
             }
         }
@@ -467,10 +487,12 @@ export class Requirement extends Class {
             param = param.replace(/\/ig$/, '');
             param = param.replace(/\/$/, '');
         }
-        for (const html of input.htmls) {
-            let regex = new RegExp(param);
-            if (regex.exec(html.value)) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                let regex = new RegExp(param);
+                if (regex.exec(html.value)) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {
@@ -544,10 +566,12 @@ export class Requirement extends Class {
         errors: undefined,
     }) {
         let valid = false;
-        for (const html of input.htmls) {
-            let input_confirmation = document.querySelector(`[name=${ input.props.name }_confirmation]`);
-            if (html.value == input_confirmation.value) {
-                valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                let input_confirmation = document.querySelector(`[name=${ input.props.name }_confirmation]`);
+                if (html.value == input_confirmation.value) {
+                    valid = true;
+                }
             }
         }
         if (!valid) {

@@ -26,10 +26,10 @@ const defaultCallbacks = {
         function: function (params) { /* console.log(params) */ },
         params: {}
 }, valid: {
-        function: function (params) { console.log(params) },
+        function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
         params: {}
 }, invalid: {
-        function: function (params) { console.log(params) },
+        function: function (params) { /* console.log(params) */ },
         params: {}
 }};
 
@@ -74,10 +74,10 @@ export class Form extends Class {
             function: function (params) { /* console.log(params) */ },
             params: {}
     }, valid: {
-            function: function (params) { console.log(params) },
+            function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
             params: {}
     }, invalid: {
-            function: function (params) { console.log(params) },
+            function: function (params) { /* console.log(params) */ },
             params: {}
     }}) {
         super({ ...deafultProps, ...props }, { ...defaultState, ...state });
@@ -211,6 +211,38 @@ export class Form extends Class {
         if (this.errors) {
             if (this.errors.hasOwnProperty(target)) {
                 delete this.errors[target];
+            }
+        }
+    }
+
+    /**
+     * * Refresh the Form Inputs.
+     * @memberof Form
+     */
+    refreshInputs () {
+        for (const input of this.inputs) {
+            if (!input.htmls.length) {
+                for (const newInput of Input.getAllDomHTML(this)) {
+                    if (newInput.htmls.length) {
+                        if (newInput.props.name === input.props.name) {
+                            for (const html of newInput.htmls) {
+                                switch (html.nodeName) {
+                                    case 'INPUT':
+                                        if (input.props.type !== html.type) {
+                                            input.setProps('type', html.type);
+                                        }
+                                        break;
+                                    case 'SELECT':
+                                        if (input.props.type !== 'select') {
+                                            input.setProps('type', 'select');
+                                        }
+                                        break;
+                                }
+                                input.setHTMLs(html, this);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
