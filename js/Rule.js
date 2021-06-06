@@ -4,17 +4,6 @@ import Class from "../../JuanCruzAGB/js/Class.js";
 // ? ValidationJS repository
 import Requirement from "./Requirement.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'rule-1',
-    target: undefined,
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    //
-};
-
 /**
  * * Rule controls the Form Rules.
  * @export
@@ -28,31 +17,53 @@ export class Rule extends Class {
      * @param {object} [props] Rule properties:
      * @param {string} [props.id='rule-1'] Rule primary key.
      * @param {object} [props.target=undefined] Rule target.
-     * @param {array} requirements Rule Requirements.
+     * @param {array} reqs Rule Requirements.
      * @memberof Rule
      */
     constructor (props = {
         id: 'rule-1',
         target: undefined,
-    }, state = {}, requirements) {
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
-        this.setRequirements(requirements);
+    }, reqs) {
+        super({ ...Rule.props, ...props });
+        this.setReqs(reqs);
+    }
+
+    /**
+     * * Set the array indexes Requirements.
+     * @param {array} [array] Requirements from indexes
+     * @memberof Rule
+     */
+    setArrayReqs (array = []) {
+        if (!this.array) {
+            this.array = [];
+        }
+        for (const element of array) {
+            if (typeof element.reqs == 'string') {
+                element.reqs = element.reqs.split("|");
+            }
+            let reqs = element.reqs;
+            element.reqs = [];
+            for (const req of reqs) {
+                element.reqs.push(new Requirement({ name: req }));
+            }
+            this.array.push(element);
+        }
     }
 
     /**
      * * Set the Rule Requirements.
-     * @param {array} requirements Rule Requirements.
+     * @param {array} [reqs] Rule Requirements.
      * @memberof Rule
      */
-    setRequirements (requirements) {
-        if (!this.requirements) {
-            this.requirements = [];
+    setReqs (reqs = []) {
+        if (!this.reqs) {
+            this.reqs = [];
         }
-        if (typeof requirements == 'string') {
-            requirements = requirements.split("|");
+        if (typeof reqs == 'string') {
+            reqs = reqs.split("|");
         }
-        for (const requirement of requirements) {
-            this.requirements.push(new Requirement({ name: requirement }));
+        for (const req of reqs) {
+            this.reqs.push(new Requirement({ name: req }));
         }
     }
 
@@ -62,14 +73,14 @@ export class Rule extends Class {
      * @returns {Requirement}
      * @memberof Rule
      */
-    getRequirementsFromInput (input = undefined) {
-        let requirements = [];
-        for (const requirement of this.requirements) {
+    getReqsFromInput (input = undefined) {
+        let reqs = [];
+        for (const req of this.reqs) {
             if(this.props.target == input.props.name){
-                requirements.push(requirement);
+                reqs.push(req);
             }
         }
-        return requirements;
+        return reqs;
     }
 
     /**
@@ -83,12 +94,18 @@ export class Rule extends Class {
         let rules = [], key = 0;
         for (const target in rulesToFor) {
             if (Object.hasOwnProperty.call(rulesToFor, target)) {
-                const requirements = rulesToFor[target];
-                if (/\.\*/.exec(target)) {
-                    target = target.split('.*').shift();
+                const reqs = rulesToFor[target];
+                if (/\./.exec(target)) {
+                    for (const rule of rules) {
+                        if (target.split('.')[0] === rule.props.target) {
+                            rule.setArrayReqs([{ index: target.split('.')[1], reqs: reqs }]);
+                        }
+                    }
                 }
-                rules.push(new this(this.generateProperties(key, target), {}, requirements));
-                key++;
+                if (!/\.\*/.exec(target)) {
+                    rules.push(new this(this.generateProperties(key, target), reqs));
+                    key++;
+                }
             }
         }
         return rules;
@@ -122,6 +139,15 @@ export class Rule extends Class {
                 delete rules[rule];
             }
         }
+    }
+
+    /**
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'rule-1',
+        target: undefined,
     }
 };
 

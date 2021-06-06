@@ -1,18 +1,6 @@
 // ? JuanCruzAGB repository
 import Class from "../../JuanCruzAGB/js/Class.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'req-1',
-    name: 'required',
-    param: false,
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    //
-};
-
 /**
  * * Requirement controls the Rule requirements.
  * @export
@@ -24,23 +12,22 @@ export class Requirement extends Class {
     /**
      * * Creates an instance of Requirement.
      * @param {object} [props] Requirement properties:
-     * @param {string} [props.id='requirement-1'] Requirement pimary key.
+     * @param {string} [props.id='req-1'] Requirement pimary key.
      * @param {object} [props.name='required'] Requirement name.
      * @param {object} [props.param=false] Requirement param.
-     * @param {object} [state] Requirement state:
      * @memberof Requirement
      */
     constructor (props = {
-        id: 'requirement-1',
+        id: 'req-1',
         name: 'required',
         param: false,
-    }, state = {}) {
+    }) {
         if (/:/.exec(props.name)) {
             let aux = props.name.split(':');
             props.name = aux[0];
             props.param = aux[1];
         }
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
+        super({ ...Requirement.props, ...props });
     }
 
     /**
@@ -57,11 +44,11 @@ export class Requirement extends Class {
         required: true,
         valid: true,
         errors: undefined,
-    }) {
+    }, array = false) {
         if (this.hasProp('param')) {
-            status = Requirement[this.props.name](input, status, this.props.param);
+            status = Requirement[this.props.name](input, status, this.props.param, array);
         } else {
-            status = Requirement[this.props.name](input, status);
+            status = Requirement[this.props.name](input, status, array);
         }
         return status;
     }
@@ -299,9 +286,13 @@ export class Requirement extends Class {
         valid: true,
         errors: undefined,
     }) {
-        let valid = false;
-        if (input.isArray()) {
-            valid = true;
+        let valid = true;
+        if (input && input.htmls && input.htmls.length) {
+            for (const html of input.htmls) {
+                if (!/\[/.exec(html.name)) {   
+                    valid = false;
+                }
+            }
         }
         if (!valid) {
             status = this.setError({
@@ -361,12 +352,28 @@ export class Requirement extends Class {
         required: true,
         valid: true,
         errors: undefined,
-    }, param = undefined) {
+    }, param = undefined, array = false) {
         let valid = false;
         if (input && input.htmls && input.htmls.length) {
-            for (const html of input.htmls) {
-                if (html.value.length >= parseInt(param)) {
-                    valid = true;
+            if (array) {
+                if (input.htmls.length >= parseInt(param)) {
+                    let quantity = 0;
+                    for (const html of input.htmls) {
+                        if (!html.value) {
+                            break;
+                        }
+                        quantity++;
+                    }
+                    if (quantity >= parseInt(param)) {
+                        valid = true;
+                    }
+                }
+            }
+            if (!array) {
+                for (const html of input.htmls) {
+                    if (html.value.length >= parseInt(param)) {
+                        valid = true;
+                    }
                 }
             }
         }
@@ -396,12 +403,28 @@ export class Requirement extends Class {
         required: true,
         valid: true,
         errors: undefined,
-    }, param = undefined) {
+    }, param = undefined, array = false) {
         let valid = false;
         if (input && input.htmls && input.htmls.length) {
-            for (const html of input.htmls) {
-                if (html.value.length <= parseInt(param)) {
-                    valid = true;
+            if (array) {
+                if (input.htmls.length <= parseInt(param)) {
+                    let quantity = 0;
+                    for (const html of input.htmls) {
+                        if (!html.value) {
+                            break;
+                        }
+                        quantity++;
+                    }
+                    if (quantity <= parseInt(param)) {
+                        valid = true;
+                    }
+                }
+            }
+            if (!array) {
+                for (const html of input.htmls) {
+                    if (html.value.length <= parseInt(param)) {
+                        valid = true;
+                    }
                 }
             }
         }
@@ -586,7 +609,7 @@ export class Requirement extends Class {
     /**
      * * Create the error.
      * @static
-     * @param {object} requirement Requirement.
+     * @param {object} req Requirement.
      * @param {Input} input Input to validate.
      * @param {object} status Validation status.
      * @param {boolean} status.required Validation required status.
@@ -595,7 +618,7 @@ export class Requirement extends Class {
      * @returns {object}
      * @memberof Requirement
      */
-    static setError (requirement = undefined, input = undefined, status = {
+    static setError (req = undefined, input = undefined, status = {
         required: true,
         valid: true,
         errors: undefined,
@@ -605,9 +628,19 @@ export class Requirement extends Class {
         }
         status.errors.push({
             target: input.props.name,
-            requirement: requirement,
+            req: req,
         });
         return status;
+    }
+
+    /**
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'req-1',
+        name: 'required',
+        param: false,
     }
 };
 

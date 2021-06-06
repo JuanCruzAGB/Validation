@@ -9,39 +9,6 @@ import Requirement from "./Requirement.js";
 import Rule from "./Rule.js";
 import Support from "./Support.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'validation-1',
-    rules: [],
-    messages: [],
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    submit: true,
-    ignore: [],
-};
-
-/** @var {object} defaultCallbacks Default callbacks. */
-const defaultCallbacks = {
-    submit: {
-        function: function (params) { /* console.log(params) */ },
-        params: {}
-}, valid: {
-        function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
-        params: {}
-}, invalid: {
-        function: function (params) { for (const target in params.errors) {
-            if (Object.hasOwnProperty.call(params.errors, target)) {
-                const errors = params.errors[target];
-                for (const error of errors) {
-                    // console.error(`${ target }: ${ error }`);
-                }
-            }
-        } },
-        params: {}
-}};
-
 /**
  * * Validation makes an excellent Front-end validation.
  * @export
@@ -89,15 +56,17 @@ export class Validation extends Class {
             function: function (params) { for (const target in params.errors) {
                 if (Object.hasOwnProperty.call(params.errors, target)) {
                     const errors = params.errors[target];
-                    for (const error of errors) {
-                        // console.error(`${ target }: ${ error }`);
+                    if (!document.querySelector(`.support-${ target }`)) {
+                        for (const error of errors) {
+                            console.error(`${ target }: ${ error }`);
+                        }
                     }
                 }
             } },
             params: {}
     }}) {
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
-        this.setCallbacks({ ...defaultCallbacks, ...callbacks });
+        super({ ...Validation.props, ...props }, { ...Validation.state, ...state });
+        this.setCallbacks({ ...Validation.callbacks, ...callbacks });
         Rule.ignore(this.props.rules, this.state.ignore);
         this.setForm();
     }
@@ -206,9 +175,15 @@ export class Validation extends Class {
         valid: true,
         errors: undefined,
     }) {
-        for (const requirement of rule.requirements) {
+        let array = false;
+        for (const req of rule.reqs) {
+            if (req.props.name === 'array') {
+                array = true;
+            }
+        }
+        for (const req of rule.reqs) {
             if (status.valid && status.required) {
-                status = requirement.execute(form.getInputByName(rule.props.target), status);
+                status = req.execute(form.getInputByName(rule.props.target), status, array);
                 if (status.valid) {
                     Validation.valid(form, form.getInputByName(rule.props.target));
                 } else {
@@ -243,11 +218,17 @@ export class Validation extends Class {
         valid: true,
         errors: undefined,
     }) {
-        let requirements = rule.getRequirementsFromInput(input);
+        let reqs = rule.getReqsFromInput(input);
         let messages = form.getMessagesFromInput(input);
-        for (const requirement of requirements) {
+        let array = false;
+        for (const req of reqs) {
+            if (req.props.name === 'array') {
+                array = true;
+            }
+        }
+        for (const req of reqs) {
             if (status.valid && status.required) {
-                status = requirement.execute(input, status);
+                status = req.execute(input, status, array);
                 if (status.valid) {
                     Validation.valid(form, input);
                 } else {
@@ -263,6 +244,50 @@ export class Validation extends Class {
         }
         return status;
     }
+
+    /** 
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'validation-1',
+        rules: [],
+        messages: [],
+    }
+    
+    /** 
+     * @static
+     * @var {object} state Default state.
+     */
+    static state = {
+        submit: true,
+        ignore: [],
+    }
+    
+    /** 
+     * @static
+     * @var {object} callbacks Default callbacks.
+     */
+    static callbacks = {
+        submit: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+    }, valid: {
+            function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
+            params: {}
+    }, invalid: {
+            function: function (params) { for (const target in params.errors) {
+                if (Object.hasOwnProperty.call(params.errors, target)) {
+                    const errors = params.errors[target];
+                    if (!document.querySelector(`.support-${ target }`)) {
+                        for (const error of errors) {
+                            console.error(`${ target }: ${ error }`);
+                        }
+                    }
+                }
+            } },
+            params: {}
+    }}
 };
 
 // ? Validation childs

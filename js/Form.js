@@ -7,32 +7,6 @@ import Message from "./Message.js";
 import Rule from "./Rule.js";
 import Validation from "./Validation.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'validation-1',
-    rules: [],
-    messages: [],
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    // ? submit: true,
-    ignore: [],
-};
-
-/** @var {object} defaultCallbacks Default callbacks. */
-const defaultCallbacks = {
-    submit: {
-        function: function (params) { /* console.log(params) */ },
-        params: {}
-}, valid: {
-        function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
-        params: {}
-}, invalid: {
-        function: function (params) { /* console.log(params) */ },
-        params: {}
-}};
-
 /**
  * * Form controls the <form> created.
  * @export
@@ -80,8 +54,8 @@ export class Form extends Class {
             function: function (params) { /* console.log(params) */ },
             params: {}
     }}) {
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state });
-        this.setCallbacks({ ...defaultCallbacks, ...callbacks });
+        super({ ...Form.props, ...props }, { ...Form.state, ...state });
+        this.setCallbacks({ ...Form.callbacks, ...callbacks });
         let instance = this;
         this.parseRules();
         this.parseMessages();
@@ -246,6 +220,41 @@ export class Form extends Class {
             }
         }
     }
+
+    /** 
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'validation-1',
+        rules: [],
+        messages: [],
+    }
+    
+    /** 
+     * @static
+     * @var {object} state Default state.
+     */
+    static state = {
+        // ? submit: true,
+        ignore: [],
+    }
+    
+    /** 
+     * @static
+     * @var {object} callbacks Default callbacks.
+     */
+    static callbacks = {
+        submit: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+    }, valid: {
+            function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
+            params: {}
+    }, invalid: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+    }}
 };
 
 // ? Default export

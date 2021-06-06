@@ -1,17 +1,6 @@
 // ? JuanCruzAGB repository
 import Class from "../../JuanCruzAGB/js/Class.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'support-1',
-    type: 'box',
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    //
-};
-
 /**
  * * Support controls the support tooltip.
  * @export
@@ -25,15 +14,14 @@ export class Support extends Class {
      * @param {Object} [props] Support properties:
      * @param {String} [props.id='support-1'] Support primary key.
      * @param {String} [props.type='box'] Support type.
-     * @param {Object} [state] Support state:
      * @param {HTMLElemet} html Support HTML Element.
      * @memberof Support
      */
     constructor(props = {
         id: 'support-1',
         type: 'box',
-    }, state = {}, html){
-        super({ ...deafultProps, ...props }, { ...defaultState, ...state })
+    }, html){
+        super({ ...Support.props, ...props })
         this.setHTML(html);
         this.checkTypeProperty();
     }
@@ -91,9 +79,18 @@ export class Support extends Class {
         if (html = document.querySelector(`.support-${ input.props.name }`)) {
             return new this({
                 id: `${ input.props.id }-support`,
-            }, {}, html);
+            }, html);
         }
         return false;
+    }
+
+    /**
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'support-1',
+        type: 'box',
     }
 }
 

@@ -1,23 +1,6 @@
 // ? JuanCruzAGB repository
 import Class from "../../JuanCruzAGB/js/Class.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'message-1',
-    target: undefined,
-};
-
-/** @var {object} defaultState Default state. */
-const defaultState = {
-    //
-};
-
-/** @var {object} defaultReqs Default requirements properties. */
-const defaultReqs = {
-    name: undefined,
-    text: undefined
-};
-
 /**
  * * Messages controls the Valdiation Messages.
  * @class Message
@@ -31,38 +14,38 @@ export class Message extends Class {
      * @param {string} [props.id='message-1'] Message primary key.
      * @param {object} [props.target=undefined] Message target.
      * @param {object} [state] Message state:
-     * @param {object} [requirements] Message requirements properties:
-     * @param {string} [requirements.name=undefined] Message requirements name.
-     * @param {string} [requirements.text=undefined] Message requirements message.
+     * @param {object} [reqs] Message requirements properties:
+     * @param {string} [reqs.name=undefined] Message requirements name.
+     * @param {string} [reqs.text=undefined] Message requirements message.
      * @memberof Message
      */
     constructor (props = {
         id: 'message-1',
         target: undefined,
-    }, state = {}, requirements = {
+    }, state = {}, reqs = {
         name: undefined,
         text: undefined
     }) {
-        super({ ...deafultProps, ...props }, { ...defaultState, state });
-        this.setReqs({ ...defaultReqs, ...requirements });
+        super({ ...Message.props, ...props }, { ...Message.state, state });
+        this.setReqs({ ...Message.reqs, ...reqs });
     }
 
     /**
      * * Set the Message requirements.
-     * @param {object} [requirements] Message requirements properties:
-     * @param {string} [requirements.name=undefined] Message requirements name.
-     * @param {string} [requirements.text=undefined] Message requirements message.
+     * @param {object} [reqs] Message requirements properties:
+     * @param {string} [reqs.name=undefined] Message requirements name.
+     * @param {string} [reqs.text=undefined] Message requirements message.
      * @memberof Message
      */
-     setReqs (requirements = {
+     setReqs (reqs = {
         name: undefined,
         text: undefined
     }) {
-        if (!this.requirements) {
-            this.requirements = {};
+        if (!this.reqs) {
+            this.reqs = {};
         }
-        this.requirements = {
-            [requirements.name]: requirements.text,
+        this.reqs = {
+            [reqs.name]: reqs.text,
         };
     }
 
@@ -73,11 +56,11 @@ export class Message extends Class {
      * @memberof Message
      */
     getOne (error) {
-        if (this.requirements.hasOwnProperty(error.requirement.name)) {
-            const text = this.requirements[error.requirement.name];
+        if (this.reqs.hasOwnProperty(error.req.name)) {
+            const text = this.reqs[error.req.name];
             if (/:/.exec(text)) {
-                let param_regexp =  new RegExp(":" + error.requirement.name);
-                return text.replace(param_regexp, error.requirement.param);
+                let param_regexp =  new RegExp(":" + error.req.name);
+                return text.replace(param_regexp, error.req.param);
             } else {
                 return text;
             }
@@ -86,16 +69,16 @@ export class Message extends Class {
     
     /**
      * * Push a requirement.
-     * @param {object} requirement Message requirement.
-     * @param {string} requirement.name Message requirement name.
-     * @param {string} requirement.text Message requirement message.
+     * @param {object} req Message requirement.
+     * @param {string} req.name Message requirement name.
+     * @param {string} req.text Message requirement message.
      * @memberof Message
      */
-    push (requirement = {
+    push (req = {
         name: undefined,
         text: undefined
     }) {
-        this.requirements[requirement.name] = requirement.text;
+        this.reqs[req.name] = req.text;
     }
     
     /**
@@ -110,13 +93,13 @@ export class Message extends Class {
         for (const rule in messagesToParse) {
             if (Object.hasOwnProperty.call(messagesToParse, rule)) {
                 const message = messagesToParse[rule];
-                let target, requirement;
+                let target, req;
                 if (/\*\./.exec(rule)) {
                     target = rule.split('*.')[0];
-                    requirement = rule.split('*.')[1];
+                    req = rule.split('*.')[1];
                 } else {
                     target = rule.split('.')[0];
-                    requirement = rule.split('.')[1];
+                    req = rule.split('.')[1];
                 }
                 let message_found = Message.checkExist(messages, target);
                 if (!message_found) {
@@ -124,13 +107,13 @@ export class Message extends Class {
                         id: `message-${ key }`,
                         target: target,
                     }, {},{
-                        name: requirement,
+                        name: req,
                         text: message,
                     }));
                     key++;
                 } else {
                     message_found.push({
-                        name: requirement,
+                        name: req,
                         text: message,
                     });
                 }
@@ -158,6 +141,32 @@ export class Message extends Class {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'message-1',
+        target: undefined,
+    }
+    
+    /**
+     * @static
+     * @var {object} state Default state.
+     */
+    static state = {
+        //
+    }
+    
+    /**
+     * @static
+     * @var {object} reqs Default requirements properties.
+     */
+    static reqs = {
+        name: undefined,
+        text: undefined
     }
 };
 

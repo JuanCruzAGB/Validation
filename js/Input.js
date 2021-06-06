@@ -5,13 +5,6 @@ import Class from "../../JuanCruzAGB/js/Class.js";
 import Support from "./Support.js";
 import Validation from "./Validation.js";
 
-/** @var {object} deafultProps Default properties. */
-const deafultProps = {
-    id: 'input-1',
-    type: 'text',
-    name: 'input',
-};
-
 /**
  * * Input controls the <input> created.
  * @export
@@ -35,7 +28,7 @@ export class Input extends Class {
         type: 'text',
         name: 'input',
     }, html = undefined, Form) {
-        super({ ...deafultProps, ...props });
+        super({ ...Input.props, ...props });
         this.setHTMLs(html, Form);
         this.setSupport();
     }
@@ -100,10 +93,6 @@ export class Input extends Class {
                     Validation.validate(Form, instance);
                 });
                 break;
-            case 'radio':
-                // TODO
-                console.warn('TODO Apply event to the <input type="radio"/>');
-                break;
             case 'hidden':
                 for (const btn of document.querySelectorAll(`.${ this.props.name }-trigger`)) {
                     btn.addEventListener('click', function (e) {
@@ -123,19 +112,15 @@ export class Input extends Class {
                 });
                 break;
             case 'checkbox':
+            case 'radio':
+            case 'select':
                 html.addEventListener('change', function (e) {
                     e.preventDefault();
                     Validation.validate(Form, instance);
                 });
                 break;
-            case null:
-                // this.htmls[0].addEventListener('change', function (e) {
-                //     e.preventDefault();
-                //     Validation.validate(Form, instance);
-                // });
-                console.warn("Input type = null");
-                break;
-            default:
+            case 'password':
+            case 'text':
                 if (html.nodeName == 'TEXTAREA') {
                     if (html.classList.contains('ckeditor')) {
                         let input = html;
@@ -155,6 +140,9 @@ export class Input extends Class {
                         Validation.validate(Form, instance);
                     });
                 }
+                break;
+            default:
+                console.error(`Input type: ${ this.props.type } does not have event`);
                 break;
         }
     }
@@ -197,6 +185,16 @@ export class Input extends Class {
             inputs.push(input);
         }
         return inputs;
+    }
+
+    /**
+     * @static
+     * @var {object} props Default properties.
+     */
+    static props = {
+        id: 'input-1',
+        type: 'text',
+        name: 'input',
     }
 };
 
