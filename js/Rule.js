@@ -38,7 +38,7 @@ export class Rule extends Class {
             this.array = [];
         }
         for (const element of array) {
-            if (typeof element.reqs == 'string') {
+            if (typeof element.reqs === 'string') {
                 element.reqs = element.reqs.split("|");
             }
             let reqs = element.reqs;
@@ -59,7 +59,7 @@ export class Rule extends Class {
         if (!this.reqs) {
             this.reqs = [];
         }
-        if (typeof reqs == 'string') {
+        if (typeof reqs === 'string') {
             reqs = reqs.split("|");
         }
         for (const req of reqs) {
@@ -76,7 +76,7 @@ export class Rule extends Class {
     getReqsFromInput (input = undefined) {
         let reqs = [];
         for (const req of this.reqs) {
-            if(this.props.target == input.props.name){
+            if(this.props.target === input.props.name){
                 reqs.push(req);
             }
         }

@@ -121,20 +121,22 @@ export class Input extends Class {
                 break;
             case 'password':
             case 'text':
-                if (html.nodeName == 'TEXTAREA') {
+                if (html.nodeName === 'TEXTAREA') {
                     if (html.classList.contains('ckeditor')) {
                         let input = html;
                         CKEDITOR.instances[html.name].on('change', function (e) {
                             CKEDITOR.instances[input.name].updateElement();
                             Validation.validate(Form, instance);
                         });
-                    } else {
+                    }
+                    if (!html.classList.contains('ckeditor')) {
                         html.addEventListener('focusout', function (e) {
                             e.preventDefault();
                             Validation.validate(Form, instance);
                         });
                     }
-                } else {
+                }
+                if (html.nodeName !== 'TEXTAREA') {
                     html.addEventListener('focusout', function (e) {
                         e.preventDefault();
                         Validation.validate(Form, instance);
@@ -185,6 +187,52 @@ export class Input extends Class {
             inputs.push(input);
         }
         return inputs;
+    }
+
+    /**
+     * * Validate an Input.
+     * @static
+     * @param {Form} form Form to validate.
+     * @param {Input} input Input to validate.
+     * @param {Rule} rule Rule to check.
+     * @param {object} status Validation status:
+     * @param {boolean} status.required Validation required status.
+     * @param {boolean} status.valid Validation valid status.
+     * @param {object} status.errors Validation error status.
+     * @returns {object}
+     * @memberof Validation
+     */
+    static validate (form, input, rule, status = {
+        required: true,
+        valid: true,
+        errors: undefined,
+    }) {
+        let reqs = rule.getReqsFromInput(input);
+        let messages = form.getMessagesFromInput(input);
+        let array = false;
+        for (const req of reqs) {
+            if (req.props.name === 'array') {
+                array = true;
+            }
+        }
+        for (const req of reqs) {
+            if (status.valid && status.required) {
+                status = req.execute(input, status, array);
+                if (status.valid) {
+                    Validation.valid(form, input);
+                }
+                if (!status.valid) {
+                    for (let message of messages) {
+                        for (let error of status.errors) {
+                            if (message.props.target === error.target) {
+                                Validation.invalid(form, input, message.getOne(error));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return status;
     }
 
     /**

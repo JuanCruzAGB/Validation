@@ -61,7 +61,8 @@ export class Message extends Class {
             if (/:/.exec(text)) {
                 let param_regexp =  new RegExp(":" + error.req.name);
                 return text.replace(param_regexp, error.req.param);
-            } else {
+            }
+            if (!/:/.exec(text)) {
                 return text;
             }
         }
@@ -97,11 +98,18 @@ export class Message extends Class {
                 if (/\*\./.exec(rule)) {
                     target = rule.split('*.')[0];
                     req = rule.split('*.')[1];
-                } else {
+                }
+                if (!/\*\./.exec(rule)) {
                     target = rule.split('.')[0];
                     req = rule.split('.')[1];
                 }
                 let message_found = Message.checkExist(messages, target);
+                if (message_found) {
+                    message_found.push({
+                        name: req,
+                        text: message,
+                    });
+                }
                 if (!message_found) {
                     messages.push(new this({
                         id: `message-${ key }`,
@@ -111,11 +119,6 @@ export class Message extends Class {
                         text: message,
                     }));
                     key++;
-                } else {
-                    message_found.push({
-                        name: req,
-                        text: message,
-                    });
                 }
             }
         }
@@ -133,12 +136,13 @@ export class Message extends Class {
     static checkExist (messages = [], target) {
         if (messages.length) {
             for (const message of messages) {
-                if (message.props.target == target) {
+                if (message.props.target === target) {
                     return message;
                 }
             }
             return false;
-        } else {
+        }
+        if (!messages.length) {
             return false;
         }
     }

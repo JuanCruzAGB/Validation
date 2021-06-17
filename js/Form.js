@@ -102,7 +102,7 @@ export class Form extends Class {
      */
     getInputByName (name) {
         for (const input of this.inputs) {
-            if(input.props.name == name){
+            if(input.props.name === name){
                 return input;
             }
         }
@@ -117,7 +117,7 @@ export class Form extends Class {
     getMessagesFromInput (input) {
         let messages = [];
         for (const message of this.props.messages) {
-            if (message.props.target == input.props.name) {
+            if (message.props.target === input.props.name) {
                 messages.push(message);
             }
         }
@@ -136,7 +136,8 @@ export class Form extends Class {
                 this.html.classList.remove('invalid');
             }
             this.html.classList.add('valid');
-        } else {
+        }
+        if (!this.state.valid) {
             if (this.html.classList.contains('valid')) {
                 this.html.classList.remove('valid');
             }
@@ -219,6 +220,49 @@ export class Form extends Class {
                 }
             }
         }
+    }
+
+    /**
+     * * Validate a Form.
+     * @static
+     * @param {Form} form Form to validate.
+     * @param {Rule} rule Rule to check.
+     * @param {object} status Validation status:
+     * @param {boolean} status.required Validation required status.
+     * @param {boolean} status.valid Validation valid status.
+     * @param {object} status.errors Validation error status.
+     * @returns {object}
+     * @memberof Validation
+     */
+    static validate (form, rule, status = {
+        required: true,
+        valid: true,
+        errors: undefined,
+    }) {
+        let array = false;
+        for (const req of rule.reqs) {
+            if (req.props.name === 'array') {
+                array = true;
+            }
+        }
+        for (const req of rule.reqs) {
+            if (status.valid && status.required) {
+                status = req.execute(form.getInputByName(rule.props.target), status, array);
+                if (status.valid) {
+                    Validation.valid(form, form.getInputByName(rule.props.target));
+                }
+                if (!status.valid) {
+                    for (let message of form.props.messages) {
+                        for (let error of status.errors) {
+                            if (message.props.target === error.target) {
+                                Validation.invalid(form, form.getInputByName(message.props.target), message.getOne(error));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return status;
     }
 
     /** 

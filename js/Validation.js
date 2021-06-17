@@ -97,8 +97,8 @@ export class Validation extends Class {
             input.support.addError(message);
         }
         form.execute('invalid', {
-            ...form.callbacks.invalid.params,
             errors: form.errors,
+            ...form.callbacks.invalid.params,
         });
     }
 
@@ -134,9 +134,10 @@ export class Validation extends Class {
                 valid: true,
             }
             if (input === null) {
-                status = Validation.validateForm(form, rule, status);
-            }else{
-                status = Validation.validateInput(form, input, rule, status);
+                status = Form.validate(form, rule, status);
+            }
+            if (input !== null) {
+                status = Input.validate(form, input, rule, status);
             }
             if (!status.valid) {
                 valid = false;
@@ -145,10 +146,12 @@ export class Validation extends Class {
         form.changeValidaState(valid);
         if (valid) {
             form.execute('valid',{
+                ...((input === null) ? { form: form } : { form: form, input: input }),
                 ...form.callbacks.valid.params,
             });
             if (input === null) {
                 form.execute('submit', {
+                    ...((input === null) ? { form: form } : { form: form, input: input }),
                     ...form.callbacks.submit.params,
                 });
                 if (form.state.submit) {
@@ -156,93 +159,6 @@ export class Validation extends Class {
                 }
             }
         }
-    }
-
-    /**
-     * * Validate a Form.
-     * @static
-     * @param {Form} form Form to validate.
-     * @param {Rule} rule Rule to check.
-     * @param {object} status Validation status:
-     * @param {boolean} status.required Validation required status.
-     * @param {boolean} status.valid Validation valid status.
-     * @param {object} status.errors Validation error status.
-     * @returns {object}
-     * @memberof Validation
-     */
-    static validateForm (form, rule, status = {
-        required: true,
-        valid: true,
-        errors: undefined,
-    }) {
-        let array = false;
-        for (const req of rule.reqs) {
-            if (req.props.name === 'array') {
-                array = true;
-            }
-        }
-        for (const req of rule.reqs) {
-            if (status.valid && status.required) {
-                status = req.execute(form.getInputByName(rule.props.target), status, array);
-                if (status.valid) {
-                    Validation.valid(form, form.getInputByName(rule.props.target));
-                } else {
-                    for (let message of form.props.messages) {
-                        for (let error of status.errors) {
-                            if (message.props.target == error.target) {
-                                Validation.invalid(form, form.getInputByName(message.props.target), message.getOne(error));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return status;
-    }
-
-    /**
-     * * Validate an Input.
-     * @static
-     * @param {Form} form Form to validate.
-     * @param {Input} input Input to validate.
-     * @param {Rule} rule Rule to check.
-     * @param {object} status Validation status:
-     * @param {boolean} status.required Validation required status.
-     * @param {boolean} status.valid Validation valid status.
-     * @param {object} status.errors Validation error status.
-     * @returns {object}
-     * @memberof Validation
-     */
-    static validateInput (form, input, rule, status = {
-        required: true,
-        valid: true,
-        errors: undefined,
-    }) {
-        let reqs = rule.getReqsFromInput(input);
-        let messages = form.getMessagesFromInput(input);
-        let array = false;
-        for (const req of reqs) {
-            if (req.props.name === 'array') {
-                array = true;
-            }
-        }
-        for (const req of reqs) {
-            if (status.valid && status.required) {
-                status = req.execute(input, status, array);
-                if (status.valid) {
-                    Validation.valid(form, input);
-                } else {
-                    for (let message of messages) {
-                        for (let error of status.errors) {
-                            if (message.props.target == error.target) {
-                                Validation.invalid(form, input, message.getOne(error));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return status;
     }
 
     /** 
@@ -270,23 +186,23 @@ export class Validation extends Class {
      */
     static callbacks = {
         submit: {
-            function: function (params) { /* console.log(params) */ },
-            params: {}
+        function: function (params) { /* console.log(params) */ },
+        params: {}
     }, valid: {
-            function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
-            params: {}
+        function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
+        params: {}
     }, invalid: {
-            function: function (params) { for (const target in params.errors) {
-                if (Object.hasOwnProperty.call(params.errors, target)) {
-                    const errors = params.errors[target];
-                    if (!document.querySelector(`.support-${ target }`)) {
-                        for (const error of errors) {
-                            console.error(`${ target }: ${ error }`);
-                        }
+        function: function (params) { for (const target in params.errors) {
+            if (Object.hasOwnProperty.call(params.errors, target)) {
+                const errors = params.errors[target];
+                if (!document.querySelector(`.support-${ target }`)) {
+                    for (const error of errors) {
+                        console.error(`${ target }: ${ error }`);
                     }
                 }
-            } },
-            params: {}
+            }
+        } },
+        params: {}
     }}
 };
 

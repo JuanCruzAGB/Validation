@@ -47,7 +47,8 @@ export class Requirement extends Class {
     }, array = false) {
         if (this.hasProp('param')) {
             status = Requirement[this.props.name](input, status, this.props.param, array);
-        } else {
+        }
+        if (!this.hasProp('param')) {
             status = Requirement[this.props.name](input, status, array);
         }
         return status;
@@ -72,18 +73,20 @@ export class Requirement extends Class {
         let valid = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
-                if (input.props.type == 'select') {
+                if (input.props.type === 'select') {
                     if (!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value) {
                         valid = true;
                     }
-                } else if (input.props.type == 'checkbox') {
+                    continue;
+                } 
+                if (input.props.type === 'checkbox' || input.props.type === 'radio') {
                     if (html.checked) {
                         valid = true;
                     }
-                } else {
-                    if (html.value) {
-                        valid = true;
-                    }
+                    continue;
+                }
+                if (html.value) {
+                    valid = true;
                 }
             }
         }
@@ -116,20 +119,23 @@ export class Requirement extends Class {
         let required = true;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
-                if (input.props.type == 'select') {
+                if (input.props.type === 'select') {
                     if (html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value) {
                         required = false;
                     }
-                } else if (input.props.type == 'checkbox') {
-                    if (!html.checked) {
-                        required = false;
-                    } else {
+                    continue;
+                } 
+                if (input.props.type === 'checkbox') {
+                    if (html.checked) {
                         required = true;
                     }
-                } else {
-                    if (!html.value) {
+                    if (!html.checked) {
                         required = false;
                     }
+                    continue;
+                }
+                if (!html.value) {
+                    required = false;
                 }
             }
         }
@@ -190,7 +196,7 @@ export class Requirement extends Class {
         let valid = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
-                if (typeof html.value == 'string') {
+                if (typeof html.value === 'string') {
                     valid = true;
                 }
             }
@@ -463,7 +469,7 @@ export class Requirement extends Class {
                     let found = false;
                     for(let file of html.files) {
                         for(let param of params) {
-                            if (file.type == param) {
+                            if (file.type === param) {
                                 found = true;
                             }
                         }
@@ -502,7 +508,7 @@ export class Requirement extends Class {
         errors: undefined,
     }, param = undefined) {
         let valid = false;
-        if (param[0] == '/') {
+        if (param[0] === '/') {
             param = param.replace(/^\//, '');
             param = param.replace(/\/g$/, '');
             param = param.replace(/\/i$/, '');
@@ -592,7 +598,7 @@ export class Requirement extends Class {
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
                 let input_confirmation = document.querySelector(`[name=${ input.props.name }_confirmation]`);
-                if (html.value == input_confirmation.value) {
+                if (html.value === input_confirmation.value) {
                     valid = true;
                 }
             }
