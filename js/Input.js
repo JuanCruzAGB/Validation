@@ -121,6 +121,7 @@ export class Input extends Class {
                 break;
             case 'password':
             case 'text':
+            case 'url':
                 if (html.nodeName === 'TEXTAREA') {
                     if (html.classList.contains('ckeditor')) {
                         let input = html;
