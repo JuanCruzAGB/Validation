@@ -204,16 +204,16 @@ export class Validation extends Class {
         } },
         params: {}
     }}
-};
 
-// ? Validation childs
-Validation.Form = Form;
-Validation.Input = Input;
-Validation.Input = Input;
-Validation.Message = Message;
-Validation.Requirement = Requirement;
-Validation.Rule = Rule;
-Validation.Support = Support;
+    // ? Validation childs
+    static Form = Form;
+    static Input = Input;
+    static Input = Input;
+    static Message = Message;
+    static Requirement = Requirement;
+    static Rule = Rule;
+    static Support = Support;
+};
 
 // ? Default export
 export default Validation;
