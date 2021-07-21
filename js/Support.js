@@ -70,15 +70,15 @@ export class Support extends Class {
     /**
      * * Get the Support HTML Element.
      * @static
-     * @param {Input} input Parent Input.
+     * @param {Input} Input Parent Input.
      * @returns {Support}
      * @memberof Support
      */
-    static getDomHTML (input) {
+    static getDomHTML (Form, Input) {
         let html;
-        if (html = document.querySelector(`.support-${ input.props.name }`)) {
+        if (html = document.querySelector(`.support-${ Input.props.name }.${ Form.props.id }`)) {
             return new this({
-                id: `${ input.props.id }-support`,
+                id: `${ Input.props.id }-support`,
             }, html);
         }
         return false;

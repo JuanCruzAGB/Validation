@@ -11,7 +11,7 @@ import Requirement from "./Requirement.js";
  * @extends Class
  * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
-export class Rule extends Class {
+export default class Rule extends Class {
     /**
      * * Creates an instance of Rule.
      * @param {object} [props] Rule properties:
@@ -68,30 +68,16 @@ export class Rule extends Class {
     }
 
     /**
-     * * Get the Requirements from an Input.
-     * @param {Input} input Input.
-     * @returns {Requirement}
-     * @memberof Rule
-     */
-    getReqsFromInput (input = undefined) {
-        let reqs = [];
-        for (const req of this.reqs) {
-            if(this.props.target === input.props.name){
-                reqs.push(req);
-            }
-        }
-        return reqs;
-    }
-
-    /**
      * * Generate all the Rules.
      * @static
-     * @param {object} [rules] Rules.
+     * @param {array} [rules] Rules.
+     * @param {array} [ignore] Rules to ignore.
      * @returns {Rules[]}
      * @memberof Rule
      */
-    static generate (rulesToFor = []) {
+    static generate (rulesToFor = [], ignore = []) {
         let rules = [], key = 0;
+        Rule.ignore(rulesToFor, ignore);
         for (const target in rulesToFor) {
             if (Object.hasOwnProperty.call(rulesToFor, target)) {
                 const reqs = rulesToFor[target];
@@ -103,27 +89,15 @@ export class Rule extends Class {
                     }
                 }
                 if (!/\.\*/.exec(target)) {
-                    rules.push(new this(this.generateProperties(key, target), reqs));
+                    rules.push(new this({
+                        id: `rule-${ key }`,
+                        target: target,
+                    }, reqs));
                     key++;
                 }
             }
         }
         return rules;
-    }
-
-    /**
-     * * Generate the Rule properties.
-     * @static
-     * @param {number} key
-     * @param {string} target Rule target.
-     * @returns {object}
-     * @memberof Rule
-     */
-    static generateProperties (key, target) {
-        return {
-            id: `rule-${ key }`,
-            target: target,
-        };
     }
 
     /**
@@ -150,6 +124,3 @@ export class Rule extends Class {
         target: undefined,
     }
 };
-
-// ? Default export
-export default Rule;

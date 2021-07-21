@@ -7,13 +7,12 @@ import Class from "../../JuanCruzAGB/js/Class.js";
  * @extends Class
  * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
-export class Message extends Class {
+export default class Message extends Class {
     /**
      * * Creates an instance of Message.
      * @param {object} [props] Message properties:
      * @param {string} [props.id='message-1'] Message primary key.
      * @param {object} [props.target=undefined] Message target.
-     * @param {object} [state] Message state:
      * @param {object} [reqs] Message requirements properties:
      * @param {string} [reqs.name=undefined] Message requirements name.
      * @param {string} [reqs.text=undefined] Message requirements message.
@@ -22,11 +21,11 @@ export class Message extends Class {
     constructor (props = {
         id: 'message-1',
         target: undefined,
-    }, state = {}, reqs = {
+    }, reqs = {
         name: undefined,
         text: undefined
     }) {
-        super({ ...Message.props, ...props }, { ...Message.state, state });
+        super({ ...Message.props, ...props });
         this.setReqs({ ...Message.reqs, ...reqs });
     }
 
@@ -56,11 +55,11 @@ export class Message extends Class {
      * @memberof Message
      */
     getOne (error) {
-        if (this.reqs.hasOwnProperty(error.req.name)) {
-            const text = this.reqs[error.req.name];
+        if (this.reqs.hasOwnProperty(error.name)) {
+            const text = this.reqs[error.name];
             if (/:/.exec(text)) {
-                let param_regexp =  new RegExp(":" + error.req.name);
-                return text.replace(param_regexp, error.req.param);
+                let param_regexp =  new RegExp(":" + error.name);
+                return text.replace(param_regexp, error.param);
             }
             if (!/:/.exec(text)) {
                 return text;
@@ -114,7 +113,7 @@ export class Message extends Class {
                     messages.push(new this({
                         id: `message-${ key }`,
                         target: target,
-                    }, {},{
+                    }, {
                         name: req,
                         text: message,
                     }));
@@ -158,14 +157,6 @@ export class Message extends Class {
     
     /**
      * @static
-     * @var {object} state Default state.
-     */
-    static state = {
-        //
-    }
-    
-    /**
-     * @static
      * @var {object} reqs Default requirements properties.
      */
     static reqs = {
@@ -173,6 +164,3 @@ export class Message extends Class {
         text: undefined
     }
 };
-
-// ? Default export
-export default Message;

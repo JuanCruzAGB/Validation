@@ -3,7 +3,6 @@ import Class from "../../JuanCruzAGB/js/Class.js";
 
 // ? ValidationJS repository.
 import Support from "./Support.js";
-import Validation from "./Validation.js";
 
 /**
  * * Input controls the <input> created.
@@ -12,14 +11,16 @@ import Validation from "./Validation.js";
  * @extends Class
  * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
-export class Input extends Class {
+export default class Input extends Class {
     /**
      * * Creates an instance of Input.
      * @param {object} [props] Input properties:
      * @param {string} [props.id='input-1'] Input primary key.
      * @param {string} [props.type='text'] Input type.
      * @param {string} [props.name='input'] Input name.
-     * @param {HTMLElement} [html] Input HTML Element.
+     * @param {Rule} [props.rule='input'] Input Rule.
+     * @param {Message} [props.message='input'] Input Message.
+     * @param {HTMLElement[]} [htmls] Input HTML Elements.
      * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
@@ -27,29 +28,12 @@ export class Input extends Class {
         id: 'input-1',
         type: 'text',
         name: 'input',
-    }, html = undefined, Form) {
+        rule: undefined,
+        message: undefined,
+    }, htmls = [], Form) {
         super({ ...Input.props, ...props });
-        this.setHTMLs(html, Form);
-        this.setSupport();
-    }
-
-    /**
-     * * Set the Input HTML Element.
-     * @param {HTMLElement} [html] Input HTML Element.
-     * @param {Form} [Form] Parent Form.
-     * @memberof Input
-     */
-    setHTMLs (html = undefined, Form) {
-        if (!this.htmls) {
-            this.htmls = [];
-        }
-        if (html) {
-            this.htmls.push(html);
-            if (html.classList.contains('confirmation')) {
-                this.setConfirmationInput(Form, html.name);
-            }
-            this.setEvent(html, Form);
-        }
+        this.setHTMLs(htmls, Form);
+        this.setSupport(Form);
     }
 
     /**
@@ -62,20 +46,11 @@ export class Input extends Class {
         if (!this.confirmation) {
             this.confirmation = [];
         }
-        let input = document.querySelector(`form#${ Form.props.id } .form-input[name="${ name }_confirmation"]`);
-        this.confirmation.push(input);
-        input.addEventListener('focusout', function (e) {
-            e.preventDefault();
-            Validation.validate(Form, instance);
-        });
-    }
-
-    /**
-     * * Set the Input Support.
-     * @memberof Input
-     */
-    setSupport () {
-        this.support = Support.getDomHTML(this);
+        let input = document.querySelector(`.${ Form.props.id }.form-input[name="${ name }_confirmation"]`);
+        if (input) {
+            this.confirmation.push(input);
+            this.setEvent(input, Form);
+        }
     }
 
     /**
@@ -87,37 +62,27 @@ export class Input extends Class {
     setEvent (html, Form) {
         let instance = this;
         switch (this.props.type) {
+            case 'date':
+                html.addEventListener('focusout', function (e) {
+                    e.preventDefault();
+                    Form.validate(instance.props.name);
+                });
+            case 'checkbox':
             case 'file':
+            case 'radio':
+            case 'select':
                 html.addEventListener('change', function (e) {
                     e.preventDefault();
-                    Validation.validate(Form, instance);
+                    Form.validate(instance.props.name);
                 });
                 break;
             case 'hidden':
                 for (const btn of document.querySelectorAll(`.${ this.props.name }-trigger`)) {
                     btn.addEventListener('click', function (e) {
                         e.preventDefault();
-                        Validation.validate(Form, instance);
+                        Form.validate(instance.props.name);
                     });
                 }
-                break;
-            case 'date':
-                html.addEventListener('change', function (e) {
-                    e.preventDefault();
-                    Validation.validate(Form, instance);
-                });
-                html.addEventListener('focusout', function (e) {
-                    e.preventDefault();
-                    Validation.validate(Form, instance);
-                });
-                break;
-            case 'checkbox':
-            case 'radio':
-            case 'select':
-                html.addEventListener('change', function (e) {
-                    e.preventDefault();
-                    Validation.validate(Form, instance);
-                });
                 break;
             case 'password':
             case 'text':
@@ -127,20 +92,20 @@ export class Input extends Class {
                         let input = html;
                         CKEDITOR.instances[html.name].on('change', function (e) {
                             CKEDITOR.instances[input.name].updateElement();
-                            Validation.validate(Form, instance);
+                            Form.validate(instance.props.name);
                         });
                     }
                     if (!html.classList.contains('ckeditor')) {
                         html.addEventListener('focusout', function (e) {
                             e.preventDefault();
-                            Validation.validate(Form, instance);
+                            Form.validate(instance.props.name);
                         });
                     }
                 }
-                if (html.nodeName !== 'TEXTAREA') {
+                if (html.nodeName === 'INPUT') {
                     html.addEventListener('focusout', function (e) {
                         e.preventDefault();
-                        Validation.validate(Form, instance);
+                        Form.validate(instance.props.name);
                     });
                 }
                 break;
@@ -148,6 +113,125 @@ export class Input extends Class {
                 console.error(`Input type: ${ this.props.type } does not have event`);
                 break;
         }
+    }
+
+    /**
+     * * Set the Input HTML Element.
+     * @param {HTMLElement[]} [html]s Input HTML Elements.
+     * @param {Form} [Form] Parent Form.
+     * @memberof Input
+     */
+    setHTMLs (htmls = undefined, Form) {
+        if (!this.htmls) {
+            this.htmls = [];
+        }
+        if (htmls) {
+            for (const html of htmls) {
+                this.htmls.push(html);
+                if (html.classList.contains('confirmation')) {
+                    this.setConfirmationInput(Form, html.name);
+                }
+                this.setEvent(html, Form);
+            }
+        }
+    }
+
+    /**
+     * * Set the Input Support.
+     * @memberof Input
+     */
+    setSupport (Form) {
+        this.support = Support.getDomHTML(Form, this);
+    }
+
+    /**
+     * * Reloads the Input.
+     * @param {Form} Form
+     * @memberof Form
+     */
+    reload (Form) {
+        if (this.htmls.length) {
+            for (const key in [...this.htmls]) {
+                if (Object.hasOwnProperty.call([...this.htmls], key)) {
+                    const html = [...this.htmls][key];
+                    if (!document.body.contains(html)) {
+                        this.htmls.splice(key, 1);
+                    }
+                }
+            }
+        }
+        let htmls = [];
+        Htmls: for (const html of Input.querySelector(Form.props.id)) {
+            for (const oldHtml of this.htmls) {
+                if (html === oldHtml) {
+                    continue Htmls;
+                }
+            }
+            let name = html.name;
+            if (/\[/.exec(name)) {
+                name = name.split('[').shift();
+            }
+            if (name === this.props.name) {
+                htmls.push(html);
+            }
+        }
+        this.setHTMLs(htmls, Form);
+    }
+
+    /**
+     * * Invalid the Input.
+     * @param {object|false} error The error message.
+     * @memberof Input
+     */
+    invalid (error = false) {
+        for (const html of this.htmls) {
+            html.classList.remove('valid');
+            html.classList.add('invalid');
+        }
+        if (this.support && error) {
+            this.support.addError(this.props.message.getOne(error));
+        }
+    }
+
+    /**
+     * * Valid the Input.
+     * @memberof Input
+     */
+    valid () {
+        for (const html of this.htmls) {
+            html.classList.remove('invalid');
+            html.classList.add('valid');
+        }
+        if (this.support) {
+            this.support.removeError();
+        }
+    }
+
+    /**
+     * * Validate the Input.
+     * @returns {boolean}
+     * @memberof Input
+     */
+    validate () {
+        let required = true;
+        let valid = true;
+        let error = false;
+        let array = false;
+        for (const req of this.props.rule.reqs) {
+            if (req.props.name === 'array') {
+                array = true;
+            }
+            if (valid && required) {
+                [ valid, error, required ] = req.execute(this, array);
+                if (valid) {
+                    this.valid();
+                }
+                if (!valid) {
+                    this.invalid(error);
+                }
+            }
+        }
+        return [ valid, required ];
     }
     
     /**
@@ -158,13 +242,17 @@ export class Input extends Class {
      * @memberof Input
      */
     static getAllDomHTML (Form) {
-        let auxHtml = document.querySelectorAll(`form#${ Form.props.id } .form-input`), inputs = [], names = [], input;
+        let inputs = [];
         for (const rule of Form.props.rules) {
-            input = new this({
-                id: `${ Form.props.id }-${ rule.props.target }`,
-                name: rule.props.target,
-            }, undefined, Form);
-            for (const html of auxHtml) {
+            let message;
+            for (message of Form.props.messages) {
+                if (message.props.target === rule.props.target) {
+                    break;
+                }
+            }
+            let htmls = [];
+            let type = 'text';
+            for (const html of Input.querySelector(Form.props.id)) {
                 let name = html.name;
                 if (/\[/.exec(name)) {
                     name = name.split('[').shift();
@@ -172,68 +260,32 @@ export class Input extends Class {
                 if (name === rule.props.target) {
                     switch (html.nodeName) {
                         case 'INPUT':
-                            if (input.props.type !== html.type) {
-                                input.setProps('type', html.type);
+                            if (type !== html.type) {
+                                type = html.type;
                             }
                             break;
                         case 'SELECT':
-                            if (input.props.type !== 'select') {
-                                input.setProps('type', 'select');
+                            if (type !== 'select') {
+                                type = 'select';
                             }
                             break;
                     }
-                    input.setHTMLs(html, Form);
+                    htmls.push(html);
                 }
             }
-            inputs.push(input);
+            inputs.push(new this({
+                id: `${ Form.props.id }-${ rule.props.target }`,
+                name: rule.props.target,
+                type: type,
+                rule: rule,
+                message: message,
+            }, htmls, Form));
         }
         return inputs;
     }
 
-    /**
-     * * Validate an Input.
-     * @static
-     * @param {Form} form Form to validate.
-     * @param {Input} input Input to validate.
-     * @param {Rule} rule Rule to check.
-     * @param {object} status Validation status:
-     * @param {boolean} status.required Validation required status.
-     * @param {boolean} status.valid Validation valid status.
-     * @param {object} status.errors Validation error status.
-     * @returns {object}
-     * @memberof Validation
-     */
-    static validate (form, input, rule, status = {
-        required: true,
-        valid: true,
-        errors: undefined,
-    }) {
-        let reqs = rule.getReqsFromInput(input);
-        let messages = form.getMessagesFromInput(input);
-        let array = false;
-        for (const req of reqs) {
-            if (req.props.name === 'array') {
-                array = true;
-            }
-        }
-        for (const req of reqs) {
-            if (status.valid && status.required) {
-                status = req.execute(input, status, array);
-                if (status.valid) {
-                    Validation.valid(form, input);
-                }
-                if (!status.valid) {
-                    for (let message of messages) {
-                        for (let error of status.errors) {
-                            if (message.props.target === error.target) {
-                                Validation.invalid(form, input, message.getOne(error));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return status;
+    static querySelector (id_form) {
+        return document.querySelectorAll(`.${ id_form }.form-input`);
     }
 
     /**
@@ -244,8 +296,7 @@ export class Input extends Class {
         id: 'input-1',
         type: 'text',
         name: 'input',
+        rule: undefined,
+        message: undefined,
     }
 };
-
-// ? Deafult export
-export default Input;

@@ -5,7 +5,6 @@ import Class from "../../JuanCruzAGB/js/Class.js";
 import Input from "./Input.js";
 import Message from "./Message.js";
 import Rule from "./Rule.js";
-import Validation from "./Validation.js";
 
 /**
  * * Form controls the <form> created.
@@ -14,7 +13,7 @@ import Validation from "./Validation.js";
  * @extends Class
  * @author Juan Cruz Armentia <juancarmentia@gmail.com>
  */
-export class Form extends Class {
+export default class Form extends Class {
     /**
      * * Creates an instance of Form.
      * @param {object} [props] Form properties:
@@ -42,30 +41,55 @@ export class Form extends Class {
         messages: [],
     }, state = {
         submit: true,
+        ignore: [],
         valid: false,
     }, callbacks = {
         submit: {
             function: function (params) { /* console.log(params) */ },
             params: {}
-    }, valid: {
+        }, valid: {
             function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
             params: {}
-    }, invalid: {
-            function: function (params) { /* console.log(params) */ },
+        }, invalid: {
+            function: Form.defaultInvalid,
             params: {}
     }}) {
         super({ ...Form.props, ...props }, { ...Form.state, ...state });
         this.setCallbacks({ ...Form.callbacks, ...callbacks });
         let instance = this;
-        this.parseRules();
-        this.parseMessages();
+        this.setRules();
+        this.setMessages();
         this.setHTML(`form#${ this.props.id }`);
-        this.html.addEventListener('submit', function(e){
+        this.html.addEventListener('submit', function(e) {
             e.preventDefault();
-            Validation.validate(instance);
+            instance.validate();
         });
         this.setSubmitButton();
         this.setInputs();
+    }
+
+    /**
+     * * Set the Form Inputs.
+     * @memberof Form
+     */
+    setInputs () {
+        this.inputs = Input.getAllDomHTML(this);
+    }
+
+    /**
+     * * Set the Form Messages.
+     * @memberof Form
+     */
+    setMessages () {
+        this.setProps('messages', Message.generate(this.props.messages));
+    }
+
+    /**
+     * * Set the Form Rules.
+     * @memberof Form
+     */
+    setRules () {
+        this.setProps('rules', Rule.generate(this.props.rules, this.state.ignore));
     }
 
     /**
@@ -73,55 +97,17 @@ export class Form extends Class {
      * @memberof Form
      */
     setSubmitButton () {
-        let instance = this;
+        const instance = this;
         if (!this.buttons) {
             this.buttons = {};
         }
-        this.buttons.submits = document.querySelectorAll(`.form-submit.${ this.props.id }`);
-        for (const btn of this.buttons.submits) {
-            btn.addEventListener('click', function(e){
+        this.buttons = document.querySelectorAll(`.form-submit.${ this.props.id }`);
+        for (const btn of this.buttons) {
+            btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                Validation.validate(instance);
+                instance.validate();
             });
         }
-    }
-
-    /**
-     * * Set the Form Inputs.
-     * @memberof Form
-     */
-    setInputs(){
-        this.inputs = Input.getAllDomHTML(this);
-    }
-
-    /**
-     * * Return a Form Input.
-     * @param {string} name Input name.
-     * @returns {Input}
-     * @memberof Form
-     */
-    getInputByName (name) {
-        for (const input of this.inputs) {
-            if(input.props.name === name){
-                return input;
-            }
-        }
-    }
-
-    /**
-     * * Get the Messages from an Input.
-     * @param {Input} input Input.
-     * @returns {Message}
-     * @memberof Form
-     */
-    getMessagesFromInput (input) {
-        let messages = [];
-        for (const message of this.props.messages) {
-            if (message.props.target === input.props.name) {
-                messages.push(message);
-            }
-        }
-        return messages;
     }
 
     /**
@@ -129,140 +115,93 @@ export class Form extends Class {
      * @param {boolean} value Status value.
      * @memberof Form
      */
-    changeValidaState (value = false) {
+    changeValidState (value = false) {
         this.setState('valid', value);
         if (this.state.valid) {
-            if (this.html.classList.contains('invalid')) {
-                this.html.classList.remove('invalid');
-            }
+            this.html.classList.remove('invalid');
             this.html.classList.add('valid');
         }
         if (!this.state.valid) {
-            if (this.html.classList.contains('valid')) {
-                this.html.classList.remove('valid');
-            }
+            this.html.classList.remove('valid');
             this.html.classList.add('invalid');
         }
     }
 
     /**
-     * * Adds a Form validation error.
-     * @param {string} target Error target.
-     * @param {string} message Error message.
+     * * Reloads the Form Inputs.
      * @memberof Form
      */
-    addInvalidErrors (target = '', message = '') {
-        if (!this.erros) {
-            this.errors = {};
-        }
-        if (!this.errors[target]) {
-            this.errors[target] = [];
-        }
-        this.errors[target].push(message);
-    }
-
-    /**
-     * * Set the Form Rules.
-     * @memberof Form
-     */
-    parseRules () {
-        this.setProps('rules', Rule.generate(this.props.rules));
-    }
-
-    /**
-     * * Set the Form Messages.
-     * @memberof Form
-     */
-    parseMessages () {
-        this.setProps('messages', Message.generate(this.props.messages));
-    }
-
-    /**
-     * * Removes a Form validation error.
-     * @param {string} target Error target.
-     * @memberof Form
-     */
-    removeInvalidErrors (target = '') {
-        if (this.errors) {
-            if (this.errors.hasOwnProperty(target)) {
-                delete this.errors[target];
-            }
-        }
-    }
-
-    /**
-     * * Refresh the Form Inputs.
-     * @memberof Form
-     */
-    refreshInputs () {
+    reload () {
         for (const input of this.inputs) {
-            if (!input.htmls.length) {
-                for (const newInput of Input.getAllDomHTML(this)) {
-                    if (newInput.htmls.length) {
-                        if (newInput.props.name === input.props.name) {
-                            for (const html of newInput.htmls) {
-                                switch (html.nodeName) {
-                                    case 'INPUT':
-                                        if (input.props.type !== html.type) {
-                                            input.setProps('type', html.type);
-                                        }
-                                        break;
-                                    case 'SELECT':
-                                        if (input.props.type !== 'select') {
-                                            input.setProps('type', 'select');
-                                        }
-                                        break;
-                                }
-                                input.setHTMLs(html, this);
-                            }
-                        }
-                    }
-                }
-            }
+            input.reload(this);
         }
     }
 
     /**
-     * * Validate a Form.
-     * @static
-     * @param {Form} form Form to validate.
-     * @param {Rule} rule Rule to check.
-     * @param {object} status Validation status:
-     * @param {boolean} status.required Validation required status.
-     * @param {boolean} status.valid Validation valid status.
-     * @param {object} status.errors Validation error status.
-     * @returns {object}
-     * @memberof Validation
+     * * Validate the Form.
+     * @param {string|false} [target=false] If just 1 Input has to be validated.
+     * @returns {boolean}
+     * @memberof Form
      */
-    static validate (form, rule, status = {
-        required: true,
-        valid: true,
-        errors: undefined,
-    }) {
-        let array = false;
-        for (const req of rule.reqs) {
-            if (req.props.name === 'array') {
-                array = true;
+    validate (target = false) {
+        let submit = true;
+        this.reload();
+        for(let input of this.inputs) {
+            let required = true;
+            let valid = true;
+            if (target) {
+                if (input.props.name === target) {
+                    [ valid, required ] = input.validate();
+                }
+            }
+            if (!target) {
+                [ valid, required ] = input.validate();
+            }
+            if (!valid && required) {
+                submit = false;
             }
         }
-        for (const req of rule.reqs) {
-            if (status.valid && status.required) {
-                status = req.execute(form.getInputByName(rule.props.target), status, array);
-                if (status.valid) {
-                    Validation.valid(form, form.getInputByName(rule.props.target));
+        this.changeValidState(submit);
+        if (!target) {
+            if (submit) {
+                this.execute('valid',{
+                    ...((!target) ? { form: this } : { form: this, target: target }),
+                    ...this.callbacks.valid.params,
+                });
+                if (this.state.submit) {
+                    this.execute('submit', {
+                        ...((!target) ? { form: this } : { form: this, target: target }),
+                        ...this.callbacks.submit.params,
+                    });
+                    this.html.submit();
                 }
-                if (!status.valid) {
-                    for (let message of form.props.messages) {
-                        for (let error of status.errors) {
-                            if (message.props.target === error.target) {
-                                Validation.invalid(form, form.getInputByName(message.props.target), message.getOne(error));
-                            }
-                        }
+            }
+            if (!submit) {
+                this.execute('invalid',{
+                    ...((!target) ? { form: this } : { form: this, target: target }),
+                    ...this.callbacks.invalid.params,
+                });
+            }
+            return submit;
+        }
+    }
+
+    /** 
+     * * Default invalid callback function.
+     * @static
+     * @var {object} params Invalid callback function params.
+     */
+    static defaultInvalid (params = {}) {
+        for (const target in params.errors) {
+            if (Object.hasOwnProperty.call(params.errors, target)) {
+                const errors = params.errors[target];
+                if (!document.querySelector(`.support-${ target }`)) {
+                    for (const error of errors) {
+                        console.error(`${ target }: ${ error }`);
                     }
                 }
             }
         }
-        return status;
     }
 
     /** 
@@ -280,7 +219,7 @@ export class Form extends Class {
      * @var {object} state Default state.
      */
     static state = {
-        // ? submit: true,
+        submit: true,
         ignore: [],
     }
     
@@ -292,14 +231,11 @@ export class Form extends Class {
         submit: {
             function: function (params) { /* console.log(params) */ },
             params: {}
-    }, valid: {
+        }, valid: {
             function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
             params: {}
-    }, invalid: {
-            function: function (params) { /* console.log(params) */ },
+        }, invalid: {
+            function: Form.defaultInvalid,
             params: {}
-    }}
+    }};
 };
-
-// ? Default export
-export default Form;
