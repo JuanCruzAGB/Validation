@@ -105,14 +105,14 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static nullable (input = undefined) {
-        let valid = false;
+        let valid = true;
         let error = false;
-        let required = true;
+        let required = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
                 if (input.props.type === 'select') {
-                    if (html.options[html.selectedIndex].disabled || !html.options[html.selectedIndex].value) {
-                        required = false;
+                    if (!html.options[html.selectedIndex].disabled && html.options[html.selectedIndex].value) {
+                        required = true;
                     }
                     continue;
                 } 
@@ -120,13 +120,10 @@ export default class Requirement extends Class {
                     if (html.checked) {
                         required = true;
                     }
-                    if (!html.checked) {
-                        required = false;
-                    }
                     continue;
                 }
-                if (!html.value) {
-                    required = false;
+                if (html.value) {
+                    required = true;
                 }
             }
         }
@@ -219,7 +216,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static date (input = undefined) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
@@ -271,7 +268,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static url (input = undefined) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {
@@ -298,7 +295,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static min (input = undefined, param = undefined, array = false) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (input && input.htmls && input.htmls.length) {
             if (array) {
@@ -342,7 +339,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static max (input = undefined, param = undefined, array = false) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (input && input.htmls && input.htmls.length) {
             if (array) {
@@ -386,7 +383,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static mimetypes (input = undefined, param = undefined) {
-        let valid = true;
+        let valid = false;
         let error = false;
         let params = param.split(',');
         if (input && input.htmls && input.htmls.length) {
@@ -425,7 +422,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static regex (input = undefined, param = undefined) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (param[0] === '/') {
             param = param.replace(/^\//, '');
@@ -493,7 +490,7 @@ export default class Requirement extends Class {
      * @memberof Requirement
      */
     static confirmed (input = undefined) {
-        let valid = true;
+        let valid = false;
         let error = false;
         if (input && input.htmls && input.htmls.length) {
             for (const html of input.htmls) {

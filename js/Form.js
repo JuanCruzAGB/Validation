@@ -23,6 +23,7 @@ export default class Form extends Class {
      * @param {object} [state] Form state:
      * @param {boolean} [state.submit=true] Submit the Form.
      * @param {boolean} [state.valid=true] Form valid state.
+     * @param {boolean} [state.active=true] If the Validation has to be done.
      * @param {object} [callbacks] Form callbacks:
      * @param {object} [callbacks.submit] Form submit callback:
      * @param {function} [callbacks.submit.function] Form submit function callback.
@@ -43,15 +44,19 @@ export default class Form extends Class {
         submit: true,
         ignore: [],
         valid: false,
+        active: true,
     }, callbacks = {
-        submit: {
+        inactive: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+        }, invalid: {
+            function: Form.defaultInvalid,
+            params: {}
+        }, submit: {
             function: function (params) { /* console.log(params) */ },
             params: {}
         }, valid: {
             function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
-            params: {}
-        }, invalid: {
-            function: Form.defaultInvalid,
             params: {}
     }}) {
         super({ ...Form.props, ...props }, { ...Form.state, ...state });
@@ -73,7 +78,7 @@ export default class Form extends Class {
      * @memberof Form
      */
     setInputs () {
-        this.inputs = Input.getAllDomHTML(this);
+        this.inputs = Input.generate(this);
     }
 
     /**
@@ -144,45 +149,57 @@ export default class Form extends Class {
      * @memberof Form
      */
     validate (target = false) {
-        let submit = true;
-        this.reload();
-        for(let input of this.inputs) {
-            let required = true;
-            let valid = true;
-            if (target) {
-                if (input.props.name === target) {
-                    [ valid, required ] = input.validate();
+        if (this.state.active) {
+            let submit = true;
+            let errors = [];
+            this.reload();
+            for(let input of this.inputs) {
+                let required = true;
+                let valid = true;
+                let error = [];
+                if (target) {
+                    if (input.props.name === target) {
+                        [ valid, required, error ] = input.validate();
+                    }
+                }
+                if (!target) {
+                    [ valid, required, error ] = input.validate();
+                }
+                if (!valid && required) {
+                    errors.push(error);
+                    submit = false;
                 }
             }
+            this.changeValidState(submit);
             if (!target) {
-                [ valid, required ] = input.validate();
-            }
-            if (!valid && required) {
-                submit = false;
+                if (submit) {
+                    this.execute('valid',{
+                        ...((!target) ? { Form: this } : { Form: this, target: target }),
+                        ...this.callbacks.valid.params,
+                    });
+                    if (this.state.submit) {
+                        this.execute('submit', {
+                            ...((!target) ? { Form: this } : { Form: this, target: target }),
+                            ...this.callbacks.submit.params,
+                        });
+                        this.html.submit();
+                    }
+                }
+                if (!submit) {
+                    this.execute('invalid',{
+                        ...((!target) ? { Form: this } : { Form: this, target: target }),
+                        errors: errors,
+                        ...this.callbacks.invalid.params,
+                    });
+                }
+                return submit;
             }
         }
-        this.changeValidState(submit);
-        if (!target) {
-            if (submit) {
-                this.execute('valid',{
-                    ...((!target) ? { form: this } : { form: this, target: target }),
-                    ...this.callbacks.valid.params,
-                });
-                if (this.state.submit) {
-                    this.execute('submit', {
-                        ...((!target) ? { form: this } : { form: this, target: target }),
-                        ...this.callbacks.submit.params,
-                    });
-                    this.html.submit();
-                }
-            }
-            if (!submit) {
-                this.execute('invalid',{
-                    ...((!target) ? { form: this } : { form: this, target: target }),
-                    ...this.callbacks.invalid.params,
-                });
-            }
-            return submit;
+        if (!this.state.active) {
+            this.execute('inactive',{
+                Form: this,
+                ...this.callbacks.inactive.params,
+            });
         }
     }
 
@@ -192,13 +209,10 @@ export default class Form extends Class {
      * @var {object} params Invalid callback function params.
      */
     static defaultInvalid (params = {}) {
-        for (const target in params.errors) {
-            if (Object.hasOwnProperty.call(params.errors, target)) {
-                const errors = params.errors[target];
-                if (!document.querySelector(`.support-${ target }`)) {
-                    for (const error of errors) {
-                        console.error(`${ target }: ${ error }`);
-                    }
+        for (const errors of params.errors) {
+            for (const error of errors) {
+                if (!error.Input.support) {
+                    console.error(`Input [name=${ error.Input.props.name }]: ${ error.message }`);
                 }
             }
         }
@@ -210,8 +224,8 @@ export default class Form extends Class {
      */
     static props = {
         id: 'validation-1',
-        rules: [],
         messages: [],
+        rules: [],
     }
     
     /** 
@@ -219,8 +233,10 @@ export default class Form extends Class {
      * @var {object} state Default state.
      */
     static state = {
-        submit: true,
+        active: true,
         ignore: [],
+        submit: true,
+        valid: false,
     }
     
     /** 
@@ -228,14 +244,17 @@ export default class Form extends Class {
      * @var {object} callbacks Default callbacks.
      */
     static callbacks = {
-        submit: {
+        inactive: {
+            function: function (params) { /* console.log(params) */ },
+            params: {}
+        }, invalid: {
+            function: Form.defaultInvalid,
+            params: {}
+        }, submit: {
             function: function (params) { /* console.log(params) */ },
             params: {}
         }, valid: {
             function: function (params) { /* console.log("%cEverything is ok :D", "color: lime; font-weight: bold;"); */ },
-            params: {}
-        }, invalid: {
-            function: Form.defaultInvalid,
             params: {}
     }};
 };

@@ -22,6 +22,7 @@ export default class Validation {
      * @param {object} [state] Validation state:
      * @param {boolean} [state.submit=true] Submit the Form.
      * @param {array} [state.ignore] Ignore some rules.
+     * @param {boolean} [state.active=true] If the Validation has to be done.
      * @param {object} [callbacks] Validation callbacks:
      * @param {object} [callbacks.submit] Validation submit callback:
      * @param {function} [callbacks.submit.function] Validation submit function callback.
@@ -41,6 +42,7 @@ export default class Validation {
     }, state = {
         submit: true,
         ignore: [],
+        active: true,
     }, callbacks = {
         submit: {
             function: function (params) { /* console.log(params) */ },

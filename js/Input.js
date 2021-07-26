@@ -215,9 +215,10 @@ export default class Input extends Class {
     validate () {
         let required = true;
         let valid = true;
-        let error = false;
+        let errors = [];
         let array = false;
         for (const req of this.props.rule.reqs) {
+            let error = false;
             if (req.props.name === 'array') {
                 array = true;
             }
@@ -227,21 +228,26 @@ export default class Input extends Class {
                     this.valid();
                 }
                 if (!valid) {
+                    errors.push({
+                        Input: this,
+                        req: error.name,
+                        message: this.props.message.getOne(error),
+                    });
                     this.invalid(error);
                 }
             }
         }
-        return [ valid, required ];
+        return [ valid, required, errors ];
     }
     
     /**
-     * * Get all the Form <input> HTML Element.
+     * * Generates all the Form <input> HTML Element.
      * @static
      * @param {Form} Form Parent Form.
      * @returns {Input[]}
      * @memberof Input
      */
-    static getAllDomHTML (Form) {
+    static generate (Form) {
         let inputs = [];
         for (const rule of Form.props.rules) {
             let message;
@@ -284,6 +290,13 @@ export default class Input extends Class {
         return inputs;
     }
 
+    /**
+     * * Input HTML Element query selector.
+     * @static
+     * @param {string} id_form
+     * @returns {HTMLElement[]}
+     * @memberof Input
+     */
     static querySelector (id_form) {
         return document.querySelectorAll(`.${ id_form }.form-input`);
     }
