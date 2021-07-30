@@ -15,19 +15,19 @@ export default class Input extends Class {
     /**
      * * Creates an instance of Input.
      * @param {object} [props] Input properties:
-     * @param {string} [props.id='input-1'] Input primary key.
-     * @param {string} [props.type='text'] Input type.
-     * @param {string} [props.name='input'] Input name.
-     * @param {Rule} [props.rule='input'] Input Rule.
-     * @param {Message} [props.message='input'] Input Message.
+     * @param {string} [props.id="input-1"] Input primary key.
+     * @param {string} [props.type="text"] Input type.
+     * @param {string} [props.name="input"] Input name.
+     * @param {Rule} [props.rule="input"] Input Rule.
+     * @param {Message} [props.message="input"] Input Message.
      * @param {HTMLElement[]} [htmls] Input HTML Elements.
      * @param {Form} [Form] Parent Form.
      * @memberof Input
      */
     constructor (props = {
-        id: 'input-1',
-        type: 'text',
-        name: 'input',
+        id: "input-1",
+        type: "text",
+        name: "input",
         rule: undefined,
         message: undefined,
     }, htmls = [], Form) {
@@ -61,49 +61,54 @@ export default class Input extends Class {
      */
     setEvent (html, Form) {
         let instance = this;
-        switch (this.props.type) {
-            case 'date':
-                html.addEventListener('focusout', function (e) {
+        switch (this.props.type.toUpperCase()) {
+            case "DATE":
+                html.addEventListener("focusout", function (e) {
                     e.preventDefault();
                     Form.validate(instance.props.name);
                 });
-            case 'checkbox':
-            case 'file':
-            case 'radio':
-            case 'select':
-                html.addEventListener('change', function (e) {
+            case "CHECKBOX":
+            case "FILE":
+            case "RADIO":
+            case "SELECT":
+                html.addEventListener("change", function (e) {
                     e.preventDefault();
                     Form.validate(instance.props.name);
                 });
                 break;
-            case 'hidden':
+            case "HIDDEN":
                 for (const btn of document.querySelectorAll(`.${ this.props.name }-trigger`)) {
-                    btn.addEventListener('click', function (e) {
+                    btn.addEventListener("click", function (e) {
                         e.preventDefault();
                         Form.validate(instance.props.name);
                     });
                 }
                 break;
-            case 'password':
-            case 'text':
-            case 'url':
-                if (html.nodeName === 'TEXTAREA') {
-                    if (html.classList.contains('ckeditor')) {
+            case "NUMBER":
+                html.addEventListener("change", function (e) {
+                    e.preventDefault();
+                    Form.validate(instance.props.name);
+                });
+            case "PASSWORD":
+            case "TEXT":
+            case "URL":
+                if (html.nodeName === "TEXTAREA") {
+                    if (html.classList.contains("ckeditor")) {
                         let input = html;
-                        CKEDITOR.instances[html.name].on('change', function (e) {
+                        CKEDITOR.instances[html.name].on("change", function (e) {
                             CKEDITOR.instances[input.name].updateElement();
                             Form.validate(instance.props.name);
                         });
                     }
-                    if (!html.classList.contains('ckeditor')) {
-                        html.addEventListener('focusout', function (e) {
+                    if (!html.classList.contains("ckeditor")) {
+                        html.addEventListener("focusout", function (e) {
                             e.preventDefault();
                             Form.validate(instance.props.name);
                         });
                     }
                 }
-                if (html.nodeName === 'INPUT') {
-                    html.addEventListener('focusout', function (e) {
+                if (html.nodeName === "INPUT") {
+                    html.addEventListener("focusout", function (e) {
                         e.preventDefault();
                         Form.validate(instance.props.name);
                     });
@@ -128,7 +133,7 @@ export default class Input extends Class {
         if (htmls) {
             for (const html of htmls) {
                 this.htmls.push(html);
-                if (html.classList.contains('confirmation')) {
+                if (html.classList.contains("confirmation")) {
                     this.setConfirmationInput(Form, html.name);
                 }
                 this.setEvent(html, Form);
@@ -169,7 +174,7 @@ export default class Input extends Class {
             }
             let name = html.name;
             if (/\[/.exec(name)) {
-                name = name.split('[').shift();
+                name = name.split("[").shift();
             }
             if (name === this.props.name) {
                 htmls.push(html);
@@ -185,8 +190,8 @@ export default class Input extends Class {
      */
     invalid (error = false) {
         for (const html of this.htmls) {
-            html.classList.remove('valid');
-            html.classList.add('invalid');
+            html.classList.remove("valid");
+            html.classList.add("invalid");
         }
         if (this.support && error) {
             this.support.addError(this.props.message.getOne(error));
@@ -199,8 +204,8 @@ export default class Input extends Class {
      */
     valid () {
         for (const html of this.htmls) {
-            html.classList.remove('invalid');
-            html.classList.add('valid');
+            html.classList.remove("invalid");
+            html.classList.add("valid");
         }
         if (this.support) {
             this.support.removeError();
@@ -219,7 +224,7 @@ export default class Input extends Class {
         let array = false;
         for (const req of this.props.rule.reqs) {
             let error = false;
-            if (req.props.name === 'array') {
+            if (req.props.name === "array") {
                 array = true;
             }
             if (valid && required) {
@@ -257,22 +262,22 @@ export default class Input extends Class {
                 }
             }
             let htmls = [];
-            let type = 'text';
+            let type = "text";
             for (const html of Input.querySelector(Form.props.id)) {
                 let name = html.name;
                 if (/\[/.exec(name)) {
-                    name = name.split('[').shift();
+                    name = name.split("[").shift();
                 }
                 if (name === rule.props.target) {
                     switch (html.nodeName) {
-                        case 'INPUT':
+                        case "INPUT":
                             if (type !== html.type) {
                                 type = html.type;
                             }
                             break;
-                        case 'SELECT':
-                            if (type !== 'select') {
-                                type = 'select';
+                        case "SELECT":
+                            if (type !== "select") {
+                                type = "select";
                             }
                             break;
                     }
@@ -306,9 +311,9 @@ export default class Input extends Class {
      * @var {object} props Default properties.
      */
     static props = {
-        id: 'input-1',
-        type: 'text',
-        name: 'input',
+        id: "input-1",
+        type: "text",
+        name: "input",
         rule: undefined,
         message: undefined,
     }
