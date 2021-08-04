@@ -177,6 +177,18 @@ export default class Input extends Class {
                 name = name.split("[").shift();
             }
             if (name === this.props.name) {
+                switch (html.nodeName) {
+                    case "INPUT":
+                        if (this.props.type !== html.type) {
+                            this.setProps("type", html.type);
+                        }
+                        break;
+                    case "SELECT":
+                        if (this.props.type !== "select") {
+                            this.setProps("type", "select");
+                        }
+                        break;
+                }
                 htmls.push(html);
             }
         }
@@ -222,6 +234,7 @@ export default class Input extends Class {
         let valid = true;
         let errors = [];
         let array = false;
+        console.log(this);
         for (const req of this.props.rule.reqs) {
             let error = false;
             if (req.props.name === "array") {
