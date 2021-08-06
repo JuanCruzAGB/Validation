@@ -234,7 +234,6 @@ export default class Input extends Class {
         let valid = true;
         let errors = [];
         let array = false;
-        console.log(this);
         for (const req of this.props.rule.reqs) {
             let error = false;
             if (req.props.name === "array") {
