@@ -200,6 +200,7 @@ export default class Form extends Class {
                 Form: this,
                 ...this.callbacks.inactive.params,
             });
+            return false;
         }
     }
 
