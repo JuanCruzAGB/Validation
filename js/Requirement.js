@@ -302,8 +302,14 @@ export default class Requirement extends Class {
                 if (input.htmls.length >= parseInt(param)) {
                     let quantity = 0;
                     for (const html of input.htmls) {
-                        if (!html.value) {
-                            break;
+                        if (["checkbox", "radio"].indexOf(input.props.type) >= 0) {
+                            if (!html.checked) {
+                                break;
+                            }
+                        } else {
+                            if (!html.value) {
+                                break;
+                            }
                         }
                         quantity++;
                     }
@@ -346,8 +352,14 @@ export default class Requirement extends Class {
                 if (input.htmls.length <= parseInt(param)) {
                     let quantity = 0;
                     for (const html of input.htmls) {
-                        if (!html.value) {
-                            break;
+                        if (["checkbox", "radio"].indexOf(input.props.type) >= 0) {
+                            if (!html.checked) {
+                                break;
+                            }
+                        } else {
+                            if (!html.value) {
+                                break;
+                            }
                         }
                         quantity++;
                     }
