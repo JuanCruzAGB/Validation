@@ -9,7 +9,7 @@ import Requirement from "./Requirement.js";
  * @export
  * @class Rule
  * @extends Class
- * @author Juan Cruz Armentia <juancarmentia@gmail.com>
+ * @author Juan Cruz Armentia <juan.cruz.armentia@gmail.com>
  */
 export default class Rule extends Class {
     /**

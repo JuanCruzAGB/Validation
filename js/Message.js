@@ -5,7 +5,7 @@ import Class from "../../JuanCruzAGB/js/Class.js";
  * * Messages controls the Valdiation Messages.
  * @class Message
  * @extends Class
- * @author Juan Cruz Armentia <juancarmentia@gmail.com>
+ * @author Juan Cruz Armentia <juan.cruz.armentia@gmail.com>
  */
 export default class Message extends Class {
     /**

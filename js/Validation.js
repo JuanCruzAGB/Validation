@@ -10,7 +10,7 @@ import Support from "./Support.js";
  * * Validation makes an excellent Front-end validation.
  * @export
  * @class Validation
- * @author Juan Cruz Armentia <juancarmentia@gmail.com>
+ * @author Juan Cruz Armentia <juan.cruz.armentia@gmail.com>
  */
 export default class Validation {
     /**

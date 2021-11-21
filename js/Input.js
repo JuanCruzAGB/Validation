@@ -9,7 +9,7 @@ import Support from "./Support.js";
  * @export
  * @class Input
  * @extends Class
- * @author Juan Cruz Armentia <juancarmentia@gmail.com>
+ * @author Juan Cruz Armentia <juan.cruz.armentia@gmail.com>
  */
 export default class Input extends Class {
     /**
